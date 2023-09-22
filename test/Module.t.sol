@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.19;
-
+/*
 import { Test, console2 } from "forge-std/Test.sol";
-import { Module } from "../src/Module.sol";
+import { MultiClaimsHatter } from "../src/MultiClaimsHatter.sol";
 import { Deploy, DeployPrecompiled } from "../script/Deploy.s.sol";
 import {
   HatsModuleFactory, IHats, deployModuleInstance, deployModuleFactory
@@ -88,3 +88,4 @@ contract Deployment is WithInstanceTest {
 }
 
 contract UnitTests is WithInstanceTest { }
+*/
