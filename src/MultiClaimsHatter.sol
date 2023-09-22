@@ -329,7 +329,7 @@ contract MultiClaimsHatter is HatsModule {
 
   function _isExplicitlyEligible(uint256 _hatId, address _account) internal view returns (bool eligible) {
     // get the hat's eligibility module address
-    address eligibility = HATS().getHatEligibilityModule(hatId());
+    address eligibility = HATS().getHatEligibilityModule(_hatId);
     // get _wearer's eligibility status from the eligibility module
     bool standing;
     (bool success, bytes memory returndata) =
