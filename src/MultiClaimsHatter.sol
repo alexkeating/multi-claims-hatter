@@ -26,15 +26,9 @@ contract MultiClaimsHatter is HatsModule {
   //////////////////////////////////////////////////////////////*/
 
   /// @notice Emitted when the claimability of multiple hats was edited
-  event HatsEdited(uint256[] hatIds, ClaimInfo[] claimInfo);
+  event HatsClaimabilityEdited(uint256[] hatIds, ClaimInfo[] claimInfo);
   /// @notice Emitted when the calimability of a hat was edited
-  event HatEdited(uint256 hatIds, ClaimInfo claimInfo);
-  /// @notice Emitted when a hat was claimed
-  event HatClaimed(uint256 hatId, address wearer);
-  /// @notice Emitted when multiple hats were claimed by a single wearer
-  event HatsClaimedByWearer(uint256[] hatIds, address wearer);
-  /// @notice Emitted when multiple hats were claimed for wearers
-  event HatsClaimedForWearers(uint256[] hatIds, address[] wearers);
+  event HatClaimabilityEdited(uint256 hatIds, ClaimInfo claimInfo);
 
   /*//////////////////////////////////////////////////////////////
                             DATA MODELS
@@ -103,7 +97,7 @@ contract MultiClaimsHatter is HatsModule {
 
     // decode init data
     (uint256[] memory _hatIds, ClaimInfo[] memory _claimInfo) = abi.decode(_initData, (uint256[], ClaimInfo[]));
-    _addOrRemoveHatsMemory(_hatIds, _claimInfo);
+    _setHatsClaimabilityMemory(_hatIds, _claimInfo);
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -115,12 +109,12 @@ contract MultiClaimsHatter is HatsModule {
    * @param _hatId The ID of the hat to edit
    * @param _claimInfo New claimability information for the hat
    */
-  function addOrRemoveHat(uint256 _hatId, ClaimInfo _claimInfo) public {
+  function setHatClaimability(uint256 _hatId, ClaimInfo _claimInfo) public {
     if (!HATS().isAdminOfHat(msg.sender, _hatId)) revert MultiClaimsHatter_NotAdminOfHat(msg.sender, _hatId);
 
     claimableHats[_hatId] = _claimInfo;
 
-    emit HatEdited(_hatId, _claimInfo);
+    emit HatClaimabilityEdited(_hatId, _claimInfo);
   }
 
   /**
@@ -128,7 +122,7 @@ contract MultiClaimsHatter is HatsModule {
    * @param _hatIds The IDs of the hats to edit
    * @param _claimInfo New claimability information for each hat
    */
-  function addOrRemoveHats(uint256[] calldata _hatIds, ClaimInfo[] calldata _claimInfo) public {
+  function setHatsClaimability(uint256[] calldata _hatIds, ClaimInfo[] calldata _claimInfo) public {
     uint256 length = _hatIds.length;
     if (_claimInfo.length != length) {
       revert MultiClaimsHatter_ArrayLengthMismatch();
@@ -143,7 +137,7 @@ contract MultiClaimsHatter is HatsModule {
       }
     }
 
-    emit HatsEdited(_hatIds, _claimInfo);
+    emit HatsClaimabilityEdited(_hatIds, _claimInfo);
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -160,14 +154,13 @@ contract MultiClaimsHatter is HatsModule {
     }
 
     _mint(_hatId, msg.sender);
-    emit HatClaimed(_hatId, msg.sender);
   }
 
   /**
    * @notice Claim multiple hats.
    * @param _hatIds The IDs of the hats to claim
    */
-  function claimMultipleHats(uint256[] calldata _hatIds) public {
+  function claimHats(uint256[] calldata _hatIds) public {
     for (uint256 i; i < _hatIds.length;) {
       uint256 hatId = _hatIds[i];
       if (claimableHats[hatId] == ClaimInfo.NotClaimable) {
@@ -175,9 +168,11 @@ contract MultiClaimsHatter is HatsModule {
       }
 
       _mint(hatId, msg.sender);
-    }
 
-    emit HatsClaimedByWearer(_hatIds, msg.sender);
+      unchecked {
+        ++i;
+      }
+    }
   }
 
   /**
@@ -191,7 +186,6 @@ contract MultiClaimsHatter is HatsModule {
     }
 
     _mint(_hatId, _account);
-    emit HatClaimed(_hatId, _account);
   }
 
   /**
@@ -199,7 +193,7 @@ contract MultiClaimsHatter is HatsModule {
    * @param _hatIds The IDs of the hats to claim for
    * @param _accounts The accounts for which to claim
    */
-  function claimMultipleHatsFor(uint256[] calldata _hatIds, address[] calldata _accounts) public {
+  function claimHatsFor(uint256[] calldata _hatIds, address[] calldata _accounts) public {
     if (_hatIds.length != _accounts.length) {
       revert MultiClaimsHatter_ArrayLengthMismatch();
     }
@@ -211,9 +205,11 @@ contract MultiClaimsHatter is HatsModule {
       }
 
       _mint(hatId, _accounts[i]);
-    }
 
-    emit HatsClaimedForWearers(_hatIds, _accounts);
+      unchecked {
+        ++i;
+      }
+    }
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -362,7 +358,7 @@ contract MultiClaimsHatter is HatsModule {
     }
   }
 
-  function _addOrRemoveHatsMemory(uint256[] memory _hatIds, ClaimInfo[] memory _claimInfo) internal {
+  function _setHatsClaimabilityMemory(uint256[] memory _hatIds, ClaimInfo[] memory _claimInfo) internal {
     uint256 length = _hatIds.length;
     if (_claimInfo.length != length) {
       revert MultiClaimsHatter_ArrayLengthMismatch();
@@ -377,7 +373,7 @@ contract MultiClaimsHatter is HatsModule {
       }
     }
 
-    emit HatsEdited(_hatIds, _claimInfo);
+    emit HatsClaimabilityEdited(_hatIds, _claimInfo);
   }
 
   /*//////////////////////////////////////////////////////////////
