@@ -26,9 +26,9 @@ contract MultiClaimsHatter is HatsModule {
   //////////////////////////////////////////////////////////////*/
 
   /// @notice Emitted when the claimability of multiple hats was edited
-  event HatsClaimabilityEdited(uint256[] hatIds, ClaimInfo[] claimInfo);
+  event HatsClaimabilityEdited(uint256[] hatIds, ClaimType[] claimType);
   /// @notice Emitted when the calimability of a hat was edited
-  event HatClaimabilityEdited(uint256 hatIds, ClaimInfo claimInfo);
+  event HatClaimabilityEdited(uint256 hatIds, ClaimType claimType);
 
   /*//////////////////////////////////////////////////////////////
                             DATA MODELS
@@ -40,7 +40,7 @@ contract MultiClaimsHatter is HatsModule {
    * @param Claimable The hat is only claimable by the account that will be the hat's wearer
    * @param ClaimableFor The hat is claimable on behalf of accounts (and also by the wearer)
    */
-  enum ClaimInfo {
+  enum ClaimType {
     NotClaimable,
     Claimable,
     ClaimableFor
@@ -76,7 +76,7 @@ contract MultiClaimsHatter is HatsModule {
   //////////////////////////////////////////////////////////////*/
 
   /// @notice Maps between hats and their claimability information
-  mapping(uint256 hatId => ClaimInfo claimInfo) claimableHats;
+  mapping(uint256 hatId => ClaimType claimType) claimableHats;
 
   /*//////////////////////////////////////////////////////////////
                             CONSTRUCTOR
@@ -96,8 +96,8 @@ contract MultiClaimsHatter is HatsModule {
     if (_initData.length == 0) return;
 
     // decode init data
-    (uint256[] memory _hatIds, ClaimInfo[] memory _claimInfo) = abi.decode(_initData, (uint256[], ClaimInfo[]));
-    _setHatsClaimabilityMemory(_hatIds, _claimInfo);
+    (uint256[] memory _hatIds, ClaimType[] memory _claimType) = abi.decode(_initData, (uint256[], ClaimType[]));
+    _setHatsClaimabilityMemory(_hatIds, _claimType);
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -107,37 +107,38 @@ contract MultiClaimsHatter is HatsModule {
   /**
    * @notice Change the claimability status of a hat. The caller should be an admin of the hat.
    * @param _hatId The ID of the hat to edit
-   * @param _claimInfo New claimability information for the hat
+   * @param _claimType New claimability information for the hat
    */
-  function setHatClaimability(uint256 _hatId, ClaimInfo _claimInfo) public {
+  function setHatClaimability(uint256 _hatId, ClaimType _claimType) public {
     if (!HATS().isAdminOfHat(msg.sender, _hatId)) revert MultiClaimsHatter_NotAdminOfHat(msg.sender, _hatId);
 
-    claimableHats[_hatId] = _claimInfo;
+    claimableHats[_hatId] = _claimType;
 
-    emit HatClaimabilityEdited(_hatId, _claimInfo);
+    emit HatClaimabilityEdited(_hatId, _claimType);
   }
 
   /**
    * @notice Change the claimability status of a multiple hats. The caller should be an admin of the hats.
    * @param _hatIds The IDs of the hats to edit
-   * @param _claimInfo New claimability information for each hat
+   * @param _claimType New claimability information for each hat
    */
-  function setHatsClaimability(uint256[] calldata _hatIds, ClaimInfo[] calldata _claimInfo) public {
+  function setHatsClaimability(uint256[] calldata _hatIds, ClaimType[] calldata _claimType) public {
     uint256 length = _hatIds.length;
-    if (_claimInfo.length != length) {
+    if (_claimType.length != length) {
       revert MultiClaimsHatter_ArrayLengthMismatch();
     }
 
+    uint256 hatId;
     for (uint256 i; i < length;) {
-      uint256 hatId = _hatIds[i];
+      hatId = _hatIds[i];
       if (!HATS().isAdminOfHat(msg.sender, hatId)) revert MultiClaimsHatter_NotAdminOfHat(msg.sender, hatId);
-      claimableHats[hatId] = _claimInfo[i];
+      claimableHats[hatId] = _claimType[i];
       unchecked {
         ++i;
       }
     }
 
-    emit HatsClaimabilityEdited(_hatIds, _claimInfo);
+    emit HatsClaimabilityEdited(_hatIds, _claimType);
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -149,7 +150,7 @@ contract MultiClaimsHatter is HatsModule {
    * @param _hatId The ID of the hat to claim
    */
   function claimHat(uint256 _hatId) public {
-    if (claimableHats[_hatId] == ClaimInfo.NotClaimable) {
+    if (claimableHats[_hatId] == ClaimType.NotClaimable) {
       revert MultiClaimsHatter_HatNotClaimable(_hatId);
     }
 
@@ -161,9 +162,10 @@ contract MultiClaimsHatter is HatsModule {
    * @param _hatIds The IDs of the hats to claim
    */
   function claimHats(uint256[] calldata _hatIds) public {
+    uint256 hatId;
     for (uint256 i; i < _hatIds.length;) {
-      uint256 hatId = _hatIds[i];
-      if (claimableHats[hatId] == ClaimInfo.NotClaimable) {
+      hatId = _hatIds[i];
+      if (claimableHats[hatId] == ClaimType.NotClaimable) {
         revert MultiClaimsHatter_HatNotClaimable(hatId);
       }
 
@@ -181,7 +183,7 @@ contract MultiClaimsHatter is HatsModule {
    * @param _account The account for which to claim
    */
   function claimHatFor(uint256 _hatId, address _account) public {
-    if (claimableHats[_hatId] != ClaimInfo.ClaimableFor) {
+    if (claimableHats[_hatId] != ClaimType.ClaimableFor) {
       revert MultiClaimsHatter_HatNotClaimableFor(_hatId);
     }
 
@@ -198,9 +200,10 @@ contract MultiClaimsHatter is HatsModule {
       revert MultiClaimsHatter_ArrayLengthMismatch();
     }
 
+    uint256 hatId;
     for (uint256 i; i < _hatIds.length;) {
-      uint256 hatId = _hatIds[i];
-      if (claimableHats[hatId] != ClaimInfo.ClaimableFor) {
+      hatId = _hatIds[i];
+      if (claimableHats[hatId] != ClaimType.ClaimableFor) {
         revert MultiClaimsHatter_HatNotClaimableFor(hatId);
       }
 
@@ -288,7 +291,7 @@ contract MultiClaimsHatter is HatsModule {
    * @param _hatId The ID of the hat
    */
   function hatIsClaimableBy(uint256 _hatId) public view returns (bool) {
-    return (hatExists(_hatId) && wearsAdmin(_hatId) && claimableHats[_hatId] != ClaimInfo.NotClaimable);
+    return (hatExists(_hatId) && wearsAdmin(_hatId) && claimableHats[_hatId] != ClaimType.NotClaimable);
   }
 
   /**
@@ -296,7 +299,7 @@ contract MultiClaimsHatter is HatsModule {
    * @param _hatId The ID of the hat
    */
   function hatIsClaimableFor(uint256 _hatId) public view returns (bool) {
-    return (hatExists(_hatId) && wearsAdmin(_hatId) && claimableHats[_hatId] == ClaimInfo.ClaimableFor);
+    return (hatExists(_hatId) && wearsAdmin(_hatId) && claimableHats[_hatId] == ClaimType.ClaimableFor);
   }
 
   /**
@@ -358,22 +361,23 @@ contract MultiClaimsHatter is HatsModule {
     }
   }
 
-  function _setHatsClaimabilityMemory(uint256[] memory _hatIds, ClaimInfo[] memory _claimInfo) internal {
+  function _setHatsClaimabilityMemory(uint256[] memory _hatIds, ClaimType[] memory _claimType) internal {
     uint256 length = _hatIds.length;
-    if (_claimInfo.length != length) {
+    if (_claimType.length != length) {
       revert MultiClaimsHatter_ArrayLengthMismatch();
     }
 
+    uint256 hatId;
     for (uint256 i; i < length;) {
-      uint256 hatId = _hatIds[i];
+      hatId = _hatIds[i];
       if (!HATS().isAdminOfHat(msg.sender, hatId)) revert MultiClaimsHatter_NotAdminOfHat(msg.sender, hatId);
-      claimableHats[hatId] = _claimInfo[i];
+      claimableHats[hatId] = _claimType[i];
       unchecked {
         ++i;
       }
     }
 
-    emit HatsClaimabilityEdited(_hatIds, _claimInfo);
+    emit HatsClaimabilityEdited(_hatIds, _claimType);
   }
 
   /*//////////////////////////////////////////////////////////////
