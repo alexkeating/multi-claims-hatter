@@ -5,7 +5,9 @@ import { Test, console2 } from "forge-std/Test.sol";
 import {
   MultiClaimsHatter,
   MultiClaimsHatter_HatNotClaimable,
-  MultiClaimsHatter_HatNotClaimableFor
+  MultiClaimsHatter_HatNotClaimableFor,
+  MultiClaimsHatter_NotAdminOfHat,
+  MultiClaimsHatter_NotExplicitlyEligible
 } from "../src/MultiClaimsHatter.sol";
 import { IHats, HatsModuleFactory, deployModuleInstance } from "hats-module/utils/DeployFunctions.sol";
 import { DeployImplementation } from "../script/MultiClaimsHatter.s.sol";
@@ -29,6 +31,7 @@ contract Setup is DeployImplementation, Test {
   address public wearer = makeAddr("wearer");
   address public eligibility = makeAddr("eligibility");
   address public toggle = makeAddr("toggle");
+  address public bot = makeAddr("bot");
 
   uint256[] public inputHats;
   address[] public inputWearers;
@@ -79,10 +82,6 @@ contract DeployInstanceWithoutInitialHats is Setup {
 }
 
 contract TestDeployInstanceWithoutInitialHats is DeployInstanceWithoutInitialHats {
-  function setUp() public virtual override {
-    super.setUp();
-  }
-
   function test_hatExistsFunction() public {
     assertEq(instance.hatExists(hat_x_1_1), true);
     assertEq(instance.hatExists(hat_x_1_1_1), true);
@@ -164,391 +163,138 @@ contract TestDeployInstanceWithoutInitialHats is DeployInstanceWithoutInitialHat
     vm.prank(wearer);
     instance.claimHatsFor(inputHats, inputWearers);
   }
+
+  function test_reverts_setHatClaimabilityNotAdmin() public {
+    vm.expectRevert();
+
+    vm.prank(wearer);
+    instance.setHatClaimability(hat_x_2, MultiClaimsHatter.ClaimType.Claimable);
+  }
 }
 
-//contract AddClaimableHats is DeployInstanceWithoutInitialHats {
-//  function setUp() public virtual override {
-//    super.setUp();
-//
-//    //bytes memory initData = initHats ? abi.encode(_hats, _claimTypes) : "";
-//    instance = MultiClaimsHatter(deployInstance(""));
-//    vm.prank(dao);
-//    HATS.mintHat(hat_x_1, address(instance));
-//  }
-//}
-
-/**
- * Scenario with 2 modules.
- * Chaining type: module1 || module2
- * Module1 returns (false, true)
- * Module2 returns (true, true)
- * Expectesd results: (true, true)
- */
-//contract Setup2 is DeployImplementationTest {
-//  function setUp() public virtual override {
-//    super.setUp();
-//
-//    module1 = address(new TestEligibilityAlwaysNotEligible("test"));
-//    module2 = address(new TestEligibilityAlwaysEligible("test"));
-//
-//    clauseLengths.push(1);
-//    clauseLengths.push(1);
-//
-//    instance = deployInstanceTwoModules(chainedEligibilityHat, 2, clauseLengths, module1, module2);
-//
-//    // update hat eligibilty to the new instance
-//    vm.prank(dao);
-//    HATS.changeHatEligibility(chainedEligibilityHat, address(instance));
-//  }
-//}
-
-//contract TestSetup2 is Setup2 {
-//  function setUp() public virtual override {
-//    super.setUp();
-//    expectedModules.push(module1);
-//    expectedModules.push(module2);
-//  }
-//
-//  function test_deployImplementation() public {
-//    assertEq(implementation.version_(), version);
-//  }
-//
-//  function test_instanceNumClauses() public {
-//    assertEq(instance.NUM_CONJUCTION_CLAUSES(), uint256(2));
-//  }
-//
-//  function test_instanceClauseLengths() public {
-//    assertEq(instance.CONJUCTION_CLAUSE_LENGTHS(), clauseLengths);
-//  }
-//
-//  function test_instanceModules() public {
-//    assertEq(instance.MODULES(), expectedModules);
-//  }
-//
-//  function test_wearerStatusInModule() public {
-//    (bool eligible, bool standing) = instance.getWearerStatus(wearer, chainedEligibilityHat);
-//    assertEq(eligible, true);
-//    assertEq(standing, true);
-//  }
-//
-//  function test_wearerStatusInHats() public {
-//    bool eligible = HATS.isEligible(wearer, chainedEligibilityHat);
-//    bool standing = HATS.isInGoodStanding(wearer, chainedEligibilityHat);
-//    assertEq(eligible, true);
-//    assertEq(standing, true);
-//  }
-//}
-
-/**
- * Scenario with 2 modules.
- * Chaining type: module1 || module2
- * Module1 returns (true, true)
- * Module2 returns (false, true)
- * Expectesd results: (true, true)
- */
-//contract Setup3 is DeployImplementationTest {
-//  function setUp() public virtual override {
-//    super.setUp();
-//
-//    module1 = address(new TestEligibilityAlwaysEligible("test"));
-//    module2 = address(new TestEligibilityAlwaysNotEligible("test"));
-//
-//    clauseLengths.push(1);
-//    clauseLengths.push(1);
-//
-//    instance = deployInstanceTwoModules(chainedEligibilityHat, 2, clauseLengths, module1, module2);
-//
-//    // update hat eligibilty to the new instance
-//    vm.prank(dao);
-//    HATS.changeHatEligibility(chainedEligibilityHat, address(instance));
-//  }
-//}
-
-//contract TestSetup3 is Setup3 {
-//  function setUp() public virtual override {
-//    super.setUp();
-//    expectedModules.push(module1);
-//    expectedModules.push(module2);
-//  }
-//
-//  function test_deployImplementation() public {
-//    assertEq(implementation.version_(), version);
-//  }
-//
-//  function test_instanceNumClauses() public {
-//    assertEq(instance.NUM_CONJUCTION_CLAUSES(), uint256(2));
-//  }
-//
-//  function test_instanceClauseLengths() public {
-//    assertEq(instance.CONJUCTION_CLAUSE_LENGTHS(), clauseLengths);
-//  }
-//
-//  function test_instanceModules() public {
-//    assertEq(instance.MODULES(), expectedModules);
-//  }
-//
-//  function test_wearerStatusInModule() public {
-//    (bool eligible, bool standing) = instance.getWearerStatus(wearer, chainedEligibilityHat);
-//    assertEq(eligible, true);
-//    assertEq(standing, true);
-//  }
-//
-//  function test_wearerStatusInHats() public {
-//    bool eligible = HATS.isEligible(wearer, chainedEligibilityHat);
-//    bool standing = HATS.isInGoodStanding(wearer, chainedEligibilityHat);
-//    assertEq(eligible, true);
-//    assertEq(standing, true);
-//  }
-//}
-
-/**
- * Scenario with 2 modules.
- * Chaining type: module1 || module2
- * Module1 returns (false, true)
- * Module2 returns (false, true)
- * Expectesd results: (false, true)
- */
-//contract Setup4 is DeployImplementationTest {
-//  function setUp() public virtual override {
-//    super.setUp();
-//
-//    module1 = address(new TestEligibilityAlwaysNotEligible("test"));
-//    module2 = address(new TestEligibilityAlwaysNotEligible("test"));
-//
-//    clauseLengths.push(1);
-//    clauseLengths.push(1);
-//
-//    instance = deployInstanceTwoModules(chainedEligibilityHat, 2, clauseLengths, module1, module2);
-//
-//    // update hat eligibilty to the new instance
-//    vm.prank(dao);
-//    HATS.changeHatEligibility(chainedEligibilityHat, address(instance));
-//  }
-//}
-
-//contract TestSetup4 is Setup4 {
-//  function setUp() public virtual override {
-//    super.setUp();
-//    expectedModules.push(module1);
-//    expectedModules.push(module2);
-//  }
-//
-//  function test_deployImplementation() public {
-//    assertEq(implementation.version_(), version);
-//  }
-//
-//  function test_instanceNumClauses() public {
-//    assertEq(instance.NUM_CONJUCTION_CLAUSES(), uint256(2));
-//  }
-//
-//  function test_instanceClauseLengths() public {
-//    assertEq(instance.CONJUCTION_CLAUSE_LENGTHS(), clauseLengths);
-//  }
-//
-//  function test_instanceModules() public {
-//    assertEq(instance.MODULES(), expectedModules);
-//  }
-//
-//  function test_wearerStatusInModule() public {
-//    (bool eligible, bool standing) = instance.getWearerStatus(wearer, chainedEligibilityHat);
-//    assertEq(eligible, false);
-//    assertEq(standing, true);
-//  }
-//
-//  function test_wearerStatusInHats() public {
-//    bool eligible = HATS.isEligible(wearer, chainedEligibilityHat);
-//    bool standing = HATS.isInGoodStanding(wearer, chainedEligibilityHat);
-//    assertEq(eligible, false);
-//    assertEq(standing, true);
-//  }
-//}
-
-/**
- * Scenario with 2 modules.
- * Chaining type: module1 && module2
- * Module1 returns (true, true)
- * Module2 returns (true, true)
- * Expectesd results: (true, true)
- */
-//contract Setup5 is DeployImplementationTest {
-//  function setUp() public virtual override {
-//    super.setUp();
-//
-//    module1 = address(new TestEligibilityAlwaysEligible("test"));
-//    module2 = address(new TestEligibilityAlwaysEligible("test"));
-//
-//    clauseLengths.push(2);
-//
-//    instance = deployInstanceTwoModules(chainedEligibilityHat, 1, clauseLengths, module1, module2);
-//
-//    // update hat eligibilty to the new instance
-//    vm.prank(dao);
-//    HATS.changeHatEligibility(chainedEligibilityHat, address(instance));
-//  }
-//}
-
-//contract TestSetup5 is Setup5 {
-//  function setUp() public virtual override {
-//    super.setUp();
-//    expectedModules.push(module1);
-//    expectedModules.push(module2);
-//  }
-//
-//  function test_deployImplementation() public {
-//    assertEq(implementation.version_(), version);
-//  }
-//
-//  function test_instanceNumClauses() public {
-//    assertEq(instance.NUM_CONJUCTION_CLAUSES(), uint256(1));
-//  }
-//
-//  function test_instanceClauseLengths() public {
-//    assertEq(instance.CONJUCTION_CLAUSE_LENGTHS(), clauseLengths);
-//  }
-//
-//  function test_instanceModules() public {
-//    assertEq(instance.MODULES(), expectedModules);
-//  }
-//
-//  function test_wearerStatusInModule() public {
-//    (bool eligible, bool standing) = instance.getWearerStatus(wearer, chainedEligibilityHat);
-//    assertEq(eligible, true);
-//    assertEq(standing, true);
-//  }
-//
-//  function test_wearerStatusInHats() public {
-//    bool eligible = HATS.isEligible(wearer, chainedEligibilityHat);
-//    bool standing = HATS.isInGoodStanding(wearer, chainedEligibilityHat);
-//    assertEq(eligible, true);
-//    assertEq(standing, true);
-//  }
-//}
-//
-/**
- * Scenario with 2 modules.
- * Chaining type: module1 && module2
- * Module1 returns (false, true)
- * Module2 returns (true, true)
- * Expectesd results: (false, true)
- */
-/*
-contract Setup6 is DeployImplementationTest {
+contract AddClaimableHats is DeployInstanceWithoutInitialHats {
   function setUp() public virtual override {
     super.setUp();
 
-    module1 = address(new TestEligibilityAlwaysNotEligible("test"));
-    module2 = address(new TestEligibilityAlwaysEligible("test"));
-
-    clauseLengths.push(2);
-
-    instance = deployInstanceTwoModules(chainedEligibilityHat, 1, clauseLengths, module1, module2);
-
-    // update hat eligibilty to the new instance
-    vm.prank(dao);
-    HATS.changeHatEligibility(chainedEligibilityHat, address(instance));
+    vm.startPrank(dao);
+    instance.setHatClaimability(hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable);
+    instance.setHatClaimability(hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor);
+    instance.setHatClaimability(hat_x_1_1_1_1, MultiClaimsHatter.ClaimType.Claimable);
+    vm.stopPrank();
   }
 }
-*/
 
-/*
-contract TestSetup6 is Setup6 {
+contract TestAddClaimableHats is AddClaimableHats {
+  function test_hatExistsFunction() public {
+    assertEq(instance.hatExists(hat_x_1_1), true);
+    assertEq(instance.hatExists(hat_x_1_1_1), true);
+    assertEq(instance.hatExists(hat_x_1_1_1_1), true);
+    assertEq(instance.hatExists(hat_x_2), true);
+    assertEq(instance.hatExists(HATS.getNextId(hat_x_2)), false);
+  }
+
+  function test_wearsAdmin() public {
+    assertEq(instance.wearsAdmin(hat_x_1_1), true);
+    assertEq(instance.wearsAdmin(hat_x_1_1_1), true);
+    assertEq(instance.wearsAdmin(hat_x_1_1_1_1), true);
+    assertEq(instance.wearsAdmin(hat_x_2), false);
+    assertEq(instance.wearsAdmin(HATS.getNextId(hat_x_2)), false);
+  }
+
+  function test_hatIsClaimableFor() public {
+    assertEq(instance.hatIsClaimableFor(hat_x_1_1), false);
+    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1), true);
+    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1_1), false);
+    assertEq(instance.hatIsClaimableFor(hat_x_2), false);
+    assertEq(instance.hatIsClaimableFor(HATS.getNextId(hat_x_2)), false);
+  }
+
+  function test_hatIsClaimableBy() public {
+    assertEq(instance.hatIsClaimableBy(hat_x_1_1), true);
+    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1), true);
+    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1_1), true);
+    assertEq(instance.hatIsClaimableBy(hat_x_2), false);
+    assertEq(instance.hatIsClaimableBy(HATS.getNextId(hat_x_2)), false);
+  }
+
+  function test_accountCanClaim() public {
+    assertEq(instance.accountCanClaim(wearer, hat_x_1_1), true);
+    assertEq(instance.accountCanClaim(wearer, hat_x_1_1_1), true);
+    assertEq(instance.accountCanClaim(wearer, hat_x_1_1_1_1), false);
+    assertEq(instance.accountCanClaim(wearer, hat_x_2), false);
+    assertEq(instance.accountCanClaim(wearer, HATS.getNextId(hat_x_2)), false);
+  }
+
+  function test_canClaimForAccount() public {
+    assertEq(instance.canClaimForAccount(wearer, hat_x_1_1), false);
+    assertEq(instance.canClaimForAccount(wearer, hat_x_1_1_1), true);
+    assertEq(instance.canClaimForAccount(wearer, hat_x_1_1_1_1), false);
+    assertEq(instance.canClaimForAccount(wearer, hat_x_2), false);
+    assertEq(instance.canClaimForAccount(wearer, HATS.getNextId(hat_x_2)), false);
+  }
+
+  function test_reverts_claimHat() public {
+    vm.expectRevert(abi.encodePacked(MultiClaimsHatter_HatNotClaimable.selector, hat_x_2));
+    vm.prank(wearer);
+    instance.claimHat(hat_x_2);
+  }
+
+  function test_reverts_claimHatFor() public {
+    vm.expectRevert(abi.encodePacked(MultiClaimsHatter_HatNotClaimableFor.selector, hat_x_1_1));
+    vm.prank(wearer);
+    instance.claimHatFor(hat_x_1_1, wearer);
+  }
+
+  function test_reverts_claimHats() public {
+    vm.expectRevert(abi.encodePacked(MultiClaimsHatter_HatNotClaimable.selector, hat_x_2));
+
+    inputHats = [hat_x_2];
+    vm.prank(wearer);
+    instance.claimHats(inputHats);
+  }
+
+  function test_reverts_claimHatsFor() public {
+    vm.expectRevert(abi.encodePacked(MultiClaimsHatter_HatNotClaimableFor.selector, hat_x_1_1));
+
+    inputHats = [hat_x_1_1];
+    inputWearers = [wearer];
+    vm.prank(wearer);
+    instance.claimHatsFor(inputHats, inputWearers);
+  }
+}
+
+contract ClaimHat is AddClaimableHats {
   function setUp() public virtual override {
     super.setUp();
-    expectedModules.push(module1);
-    expectedModules.push(module2);
-  }
 
-  function test_deployImplementation() public {
-    assertEq(implementation.version_(), version);
-  }
-
-  function test_instanceNumClauses() public {
-    assertEq(instance.NUM_CONJUCTION_CLAUSES(), uint256(1));
-  }
-
-  function test_instanceClauseLengths() public {
-    assertEq(instance.CONJUCTION_CLAUSE_LENGTHS(), clauseLengths);
-  }
-
-  function test_instanceModules() public {
-    assertEq(instance.MODULES(), expectedModules);
-  }
-
-  function test_wearerStatusInModule() public {
-    (bool eligible, bool standing) = instance.getWearerStatus(wearer, chainedEligibilityHat);
-    assertEq(eligible, false);
-    assertEq(standing, true);
-  }
-
-  function test_wearerStatusInHats() public {
-    bool eligible = HATS.isEligible(wearer, chainedEligibilityHat);
-    bool standing = HATS.isInGoodStanding(wearer, chainedEligibilityHat);
-    assertEq(eligible, false);
-    assertEq(standing, true);
+    vm.prank(wearer);
+    instance.claimHat(hat_x_1_1);
+    vm.prank(bot);
+    instance.claimHatFor(hat_x_1_1_1, wearer);
   }
 }
-*/
-/**
- * Scenario with 2 modules.
- * Chaining type: module1 && module2
- * Module1 returns (true, true)
- * Module2 returns (false, true)
- * Expectesd results: (false, true)
- */
-/*
-contract Setup7 is DeployImplementationTest {
-  function setUp() public virtual override {
-    super.setUp();
 
-    module1 = address(new TestEligibilityAlwaysEligible("test"));
-    module2 = address(new TestEligibilityAlwaysNotEligible("test"));
+contract TestClaimHat is ClaimHat {
+  function test_hatsClaimed() public {
+    assertEq(HATS.isWearerOfHat(wearer, hat_x_1_1), true);
+    assertEq(HATS.isWearerOfHat(wearer, hat_x_1_1_1), true);
+  }
 
-    clauseLengths.push(2);
+  function test_reverts_claimHatNotEligible() public {
+    vm.expectRevert(
+      abi.encodePacked(MultiClaimsHatter_NotExplicitlyEligible.selector, uint256(uint160(wearer)), hat_x_1_1_1_1)
+    );
+    vm.prank(wearer);
+    instance.claimHat(hat_x_1_1_1_1);
+  }
 
-    instance = deployInstanceTwoModules(chainedEligibilityHat, 1, clauseLengths, module1, module2);
+  function test_reverts_claimHatsNotEligible() public {
+    vm.expectRevert(
+      abi.encodePacked(MultiClaimsHatter_NotExplicitlyEligible.selector, uint256(uint160(wearer)), hat_x_1_1_1_1)
+    );
 
-    // update hat eligibilty to the new instance
-    vm.prank(dao);
-    HATS.changeHatEligibility(chainedEligibilityHat, address(instance));
+    inputHats = [hat_x_1_1_1_1];
+    vm.prank(wearer);
+    instance.claimHats(inputHats);
   }
 }
-*/
-
-/*
-contract TestSetup7 is Setup7 {
-  function setUp() public virtual override {
-    super.setUp();
-    expectedModules.push(module1);
-    expectedModules.push(module2);
-  }
-
-  function test_deployImplementation() public {
-    assertEq(implementation.version_(), version);
-  }
-
-  function test_instanceNumClauses() public {
-    assertEq(instance.NUM_CONJUCTION_CLAUSES(), uint256(1));
-  }
-
-  function test_instanceClauseLengths() public {
-    assertEq(instance.CONJUCTION_CLAUSE_LENGTHS(), clauseLengths);
-  }
-
-  function test_instanceModules() public {
-    assertEq(instance.MODULES(), expectedModules);
-  }
-
-  function test_wearerStatusInModule() public {
-    (bool eligible, bool standing) = instance.getWearerStatus(wearer, chainedEligibilityHat);
-    assertEq(eligible, false);
-    assertEq(standing, true);
-  }
-
-  function test_wearerStatusInHats() public {
-    bool eligible = HATS.isEligible(wearer, chainedEligibilityHat);
-    bool standing = HATS.isInGoodStanding(wearer, chainedEligibilityHat);
-    assertEq(eligible, false);
-    assertEq(standing, true);
-  }
-}
-*/

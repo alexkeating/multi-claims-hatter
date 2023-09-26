@@ -7,11 +7,11 @@ on:
   pull_request:
     # Optionally configure to run only for changes in specific files. For example:
     paths:
-    - src/**
-    - test/**
-    - foundry.toml
-    - remappings.txt
-    - .github/workflows/foundry-gas-diff.yml
+      - src/**
+      - test/**
+      - foundry.toml
+      - remappings.txt
+      - .github/workflows/foundry-gas-diff.yml
 
 env:
   FOUNDRY_PROFILE: default
@@ -36,7 +36,7 @@ jobs:
 
       # Add any step generating a gas report to a temporary file named gasreport.ansi. For example:
       - name: Run tests
-        run: forge test --gas-report > gasreport.ansi # <- this file name should be unique in your repository!
+        run: forge test --via-ir --gas-report > gasreport.ansi # <- this file name should be unique in your repository!
         env:
           # make fuzzing semi-deterministic to avoid noisy gas cost estimation
           # due to non-deterministic fuzzing (but still use pseudo-random fuzzing seeds)

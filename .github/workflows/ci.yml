@@ -13,9 +13,8 @@ env:
   GC_RPC: ${{ secrets.GC_RPC }}
   POLYGON_RPC: ${{ secrets.POLYGON_RPC }}
   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-  
+
 jobs:
-  
   lint:
     name: "Markdown linting"
     runs-on: ubuntu-latest
@@ -41,15 +40,15 @@ jobs:
 
       - name: Check formatting
         run: forge fmt --check
-      
+
       - name: Check contract sizes
         run: forge build --sizes --skip script
         # Replace the above line with the below if using pre-compiled ir-optimized contracts
         # run: FOUNDRY_PROFILE=optimized forge build --sizes --skip script
 
       - name: Run tests
-        run: forge test -vvv
-  
+        run: forge test --via-ir -vvv
+
   # coverage:
   #   name: "Test coverage"
 
