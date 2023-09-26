@@ -390,7 +390,6 @@ contract MultiClaimsHatter is HatsModule {
     uint256 hatId;
     for (uint256 i; i < length;) {
       hatId = _hatIds[i];
-      if (!HATS().isAdminOfHat(msg.sender, hatId)) revert MultiClaimsHatter_NotAdminOfHat(msg.sender, hatId);
       hatToClaimType[hatId] = _claimTypes[i];
       unchecked {
         ++i;

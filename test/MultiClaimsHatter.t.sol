@@ -308,11 +308,10 @@ contract TestClaimHat_WithoutInitialHats is ClaimHat_WithoutInitialHats {
 /*//////////////////////////////////////////////////////////////
       Scenario 2 - Delpoy Claims Hatter with initial hats
   //////////////////////////////////////////////////////////////*/
-/*
+
 contract DeployInstance_WithInitialHats is Setup {
   function setUp() public virtual override {
     super.setUp();
-    console2.log("start setup");
 
     address alwaysEligibleModule = address(new TestEligibilityAlwaysEligible("test"));
     address alwaysNotEligibleModule = address(new TestEligibilityAlwaysNotEligible("test"));
@@ -324,8 +323,6 @@ contract DeployInstance_WithInitialHats is Setup {
     HATS.changeHatEligibility(hat_x_2, alwaysEligibleModule);
     vm.stopPrank();
 
-    console2.log("finished changeHatEligibility");
-
     uint256[] memory initialHats = new uint256[](3);
     MultiClaimsHatter.ClaimType[] memory initialClaimTypes = new MultiClaimsHatter.ClaimType[](3);
     initialHats[0] = hat_x_1_1;
@@ -336,12 +333,9 @@ contract DeployInstance_WithInitialHats is Setup {
     initialClaimTypes[2] = MultiClaimsHatter.ClaimType.Claimable;
     bytes memory initData = abi.encode(initialHats, initialClaimTypes);
 
-    console2.log(dao);
     instance = MultiClaimsHatter(deployInstance(initData));
-    console2.log("finished deployInstance");
     vm.prank(dao);
     HATS.mintHat(hat_x_1, address(instance));
-    console2.log("finished setup");
   }
 }
 
@@ -435,9 +429,7 @@ contract TestDeployInstance_WithInitialHats is DeployInstance_WithInitialHats {
     instance.claimHats(inputHats);
   }
 }
-*/
 
-/*
 contract ClaimHat_WithInitialHats is DeployInstance_WithInitialHats {
   function setUp() public virtual override {
     super.setUp();
@@ -448,9 +440,7 @@ contract ClaimHat_WithInitialHats is DeployInstance_WithInitialHats {
     instance.claimHatFor(hat_x_1_1_1, wearer);
   }
 }
-*/
 
-/*
 contract TestClaimHat_WithInitialHats is ClaimHat_WithInitialHats {
   function test_hatsClaimed() public {
     assertEq(HATS.isWearerOfHat(wearer, hat_x_1_1), true);
@@ -475,4 +465,3 @@ contract TestClaimHat_WithInitialHats is ClaimHat_WithInitialHats {
     instance.claimHats(inputHats);
   }
 }
-*/
