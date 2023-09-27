@@ -42,12 +42,12 @@ jobs:
         run: forge fmt --check
 
       - name: Check contract sizes
-        run: forge build --via-ir --sizes --skip script
+        run: forge build --sizes --skip script
         # Replace the above line with the below if using pre-compiled ir-optimized contracts
         # run: FOUNDRY_PROFILE=optimized forge build --sizes --skip script
 
       - name: Run tests
-        run: forge test --via-ir -vvv
+        run: forge test -vvv
 
   # coverage:
   #   name: "Test coverage"

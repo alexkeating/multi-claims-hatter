@@ -188,8 +188,8 @@ contract MultiClaimsHatter is HatsModule {
     uint256[] calldata _moduleHatIds,
     bytes[] calldata _otherImmutableArgsArray,
     bytes[] calldata _initDataArray,
-    uint256[] calldata _hatIds,
-    ClaimType[] calldata _claimTypes
+    uint256[] memory _hatIds,
+    ClaimType[] memory _claimTypes
   ) public returns (bool success) {
     uint256 length = _hatIds.length;
     if (_claimTypes.length != length) {
