@@ -47,7 +47,7 @@ contract Setup is DeployImplementation, Test {
     fork = vm.createSelectFork(vm.rpcUrl("goerli"), BLOCK_NUMBER);
 
     // deploy via the script
-    DeployImplementation.prepare(false, "test"); // set last arg to true to log deployment
+    DeployImplementation.prepare(false, "test");
     DeployImplementation.run();
 
     // set up hats
@@ -513,36 +513,6 @@ contract DeployInstance_BatchModuleCreationAndRegistration is Setup {
       MultiClaimsHatter.ClaimType.Claimable
     );
     vm.stopPrank();
-
-    // Batch multi modules creation and hats registration
-    //address[] memory _implementations = new address[](2);
-    //_implementations[0] = alwaysEligibleModule;
-    //_implementations[1] = alwaysNotEligibleModule;
-    //uint256[] memory _moduleHatIds = new uint256[](2);
-    //_moduleHatIds[0] = 0;
-    //_moduleHatIds[1] = 0;
-    //bytes[] memory _otherImmutableArgsArray = new bytes[](2);
-    //_otherImmutableArgsArray[0] = "";
-    //_otherImmutableArgsArray[1] = "";
-    //bytes[] memory _initDataArray = new bytes[](2);
-    //_initDataArray[0] = "";
-    //_initDataArray[1] = "";
-    //uint256[] memory _hatIds = new uint256[](2);
-    //_hatIds[0] = hat_x_1_1_1;
-    //_hatIds[1] = hat_x_1_1_1_1;
-    //ClaimType[] memory _claimTypes = ClaimType[](2);
-    //_claimTypes[0] = MultiClaimsHatter.ClaimType.ClaimableFor;
-    //_claimTypes[1] = MultiClaimsHatter.ClaimType.NotClaimable;
-    //
-    //instance.setHatsClaimabilityAndCreateModules(
-    //  0xfE661c01891172046feE16D3a57c3Cf456729efA,
-    //  _implementations,
-    //  _moduleHatIds,
-    //  _otherImmutableArgsArray,
-    //  _initDataArray,
-    //  _hatIds,
-    //  _claimTypes
-    //);
 
     vm.startPrank(dao);
     HATS.changeHatEligibility(hat_x_1_1, module1);
