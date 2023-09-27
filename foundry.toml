@@ -2,10 +2,9 @@
 src = 'src'
 out = 'out'
 libs = ['lib']
-optimizer_runs = 1_000_000
 # the following setting ensures that deterministically deployed contracts will always be to the same address
 bytecode_hash = "none"
-gas_reports = []
+gas_reports = ["MultiClaimsHatter"]
 auto_detect_solc = false
 solc = "0.8.19"
 remappings = [
@@ -15,6 +14,7 @@ remappings = [
 ]
 # Enable tests to read ir-optimized bytecode precompiled by profile.optimized
 fs_permissions = [{ access = "read", path = "./optimized-out" }]
+via_ir = true
 
 # for pre-compiling ir-optimized bytecode that will be later deployed by tests
 [profile.optimized]
