@@ -152,7 +152,7 @@ contract MultiClaimsHatter is HatsModule {
    * @return _instance The address of the deployed HatsModule instance
    */
   function setHatClaimabilityAndCreateModule(
-    HatsModuleFactory _factory,
+    address _factory,
     address _implementation,
     uint256 _moduleHatId,
     bytes calldata _otherImmutableArgs,
@@ -164,7 +164,8 @@ contract MultiClaimsHatter is HatsModule {
 
     hatToClaimType[_hatId] = _claimType;
 
-    _instance = _factory.createHatsModule(_implementation, _moduleHatId, _otherImmutableArgs, _initData);
+    _instance =
+      HatsModuleFactory(_factory).createHatsModule(_implementation, _moduleHatId, _otherImmutableArgs, _initData);
 
     emit HatClaimabilityEdited(_hatId, _claimType);
   }
@@ -182,7 +183,7 @@ contract MultiClaimsHatter is HatsModule {
    * @return success True if all modules were successfully created and the claimability types were set
    */
   function setHatsClaimabilityAndCreateModules(
-    HatsModuleFactory _factory,
+    address _factory,
     address[] calldata _implementations,
     uint256[] calldata _moduleHatIds,
     bytes[] calldata _otherImmutableArgsArray,
@@ -205,7 +206,9 @@ contract MultiClaimsHatter is HatsModule {
       }
     }
 
-    success = _factory.batchCreateHatsModule(_implementations, _moduleHatIds, _otherImmutableArgsArray, _initDataArray);
+    success = HatsModuleFactory(_factory).batchCreateHatsModule(
+      _implementations, _moduleHatIds, _otherImmutableArgsArray, _initDataArray
+    );
 
     emit HatsClaimabilityEdited(_hatIds, _claimTypes);
   }
