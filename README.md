@@ -8,7 +8,7 @@ In [Hats Protocol](https://github.com/hats-protocol/hats-protocol), hats are typ
 
 ### Prerequisites
 
-A MultiClaimsHatter instance can make multiple hats claimable. To do so, it has to be an admin of each of the hats. Thus, a claimable hat must have an admin hat that is worn by a MultiClaimsHatter instance. 
+A MultiClaimsHatter instance can make multiple hats claimable. To do so, it has to be an admin of each of the hats. Thus, a claimable hat must have an admin hat that is worn by a MultiClaimsHatter instance.
 One common option is creating a designated hat for the MultiClaimsHatter. Once the MultiClaimsHatter instance wears this hat, it can set any hats that are under its branch as claimable.
 
 For example, if in normal operations a hat tree would look like this...
@@ -20,7 +20,7 @@ For example, if in normal operations a hat tree would look like this...
         |
    +---------------+
    | 1.1) Role Hat |
-   +---------------+  
+   +---------------+
 ```
 
 ... then to make the Role Hat claimable, another hat needs to exist in between:
@@ -44,7 +44,7 @@ Second, each of the claimable hats must have a [mechanistic eligibility module](
 ### Creating a new MultiClaimsHatter instance
 
 New instances of MultiClaimsHatter are deployed via the [HatsModuleFactory](https://github.com/Hats-Protocol/hats-module/blob/main/src/HatsModuleFactory.sol), by using the `createHatsModule` function.
-HatsModuleFactory is a clone factory that enables cheap creation of new module instances. 
+HatsModuleFactory is a clone factory that enables cheap creation of new module instances.
 
 The MultiClaimsHatter instance can be optionally created with initial claimable hats, by using the `_initData` parameter:
 
@@ -63,6 +63,7 @@ To enable MultiClaimsHatter to mint hats, it must be wearing an admin hat of the
 ### Making hats claimable
 
 Once the MultiClaimsHatter instance is setup and wears a proper admin hat, it can make any hats that it admins claimable. To do so, the following functions can be used:
+
 - `setHatClaimability` is used in order to make a signle hat claimable
 - `setHatsClaimability` is used in order to make multiple hats claimable in one transaction
 - `setHatClaimabilityAndCreateModule` is used in order to make a hat claimable and deploy a new eligibility module in one transaction
