@@ -311,7 +311,7 @@ contract MultiClaimsHatter is HatsModule {
    * @param _hatId The ID of the hat
    */
   function isClaimableBy(uint256 _hatId) public view returns (bool) {
-    return (hatExists(_hatId) && wearsAdmin(_hatId) && hatToClaimType[_hatId] != ClaimType.NotClaimable);
+    return (hatExists(_hatId) && wearsAdmin(_hatId) && hatToClaimType[_hatId] > ClaimType.NotClaimable);
   }
 
   /**
