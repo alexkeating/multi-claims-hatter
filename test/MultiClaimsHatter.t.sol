@@ -484,33 +484,15 @@ contract DeployInstance_BatchModuleCreationAndRegistration is Setup {
     vm.startPrank(dao);
     // Batch one module creation and hat registration
     address module1 = instance.setHatClaimabilityAndCreateModule(
-      FACTORY,
-      alwaysEligibleModule,
-      0,
-      "",
-      "",
-      hat_x_1_1,
-      MultiClaimsHatter.ClaimType.Claimable
+      FACTORY, alwaysEligibleModule, 0, "", "", hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable
     );
 
     address module2 = instance.setHatClaimabilityAndCreateModule(
-      FACTORY,
-      alwaysEligibleModule,
-      1,
-      "",
-      "",
-      hat_x_1_1_1,
-      MultiClaimsHatter.ClaimType.ClaimableFor
+      FACTORY, alwaysEligibleModule, 1, "", "", hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor
     );
 
     address module3 = instance.setHatClaimabilityAndCreateModule(
-      FACTORY,
-      alwaysNotEligibleModule,
-      2,
-      "",
-      "",
-      hat_x_1_1_1_1,
-      MultiClaimsHatter.ClaimType.Claimable
+      FACTORY, alwaysNotEligibleModule, 2, "", "", hat_x_1_1_1_1, MultiClaimsHatter.ClaimType.Claimable
     );
     vm.stopPrank();
 
@@ -683,13 +665,7 @@ contract DeployInstance_BatchMultiModuleCreationAndRegistration is Setup {
     vm.recordLogs();
     vm.getRecordedLogs();
     instance.setHatsClaimabilityAndCreateModules(
-      FACTORY,
-      _implementations,
-      _moduleHatIds,
-      _otherImmutableArgsArray,
-      _initDataArray,
-      _hatIds,
-      _claimTypes
+      FACTORY, _implementations, _moduleHatIds, _otherImmutableArgsArray, _initDataArray, _hatIds, _claimTypes
     );
     // get created modules addresses
     Vm.Log[] memory entries = vm.getRecordedLogs();
