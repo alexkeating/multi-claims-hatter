@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
 // import { console2 } from "forge-std/Test.sol"; // remove before deploy
@@ -26,9 +26,9 @@ contract MultiClaimsHatter is HatsModule {
   //////////////////////////////////////////////////////////////*/
 
   /// @notice Emitted when the claimability of multiple hats was edited
-  event HatsClaimabilityEdited(uint256[] hatIds, ClaimType[] claimTypes);
+  event HatsClaimabilitySet(uint256[] hatIds, ClaimType[] claimTypes);
   /// @notice Emitted when the calimability of a hat was edited
-  event HatClaimabilityEdited(uint256 hatId, ClaimType claimType);
+  event HatClaimabilitySet(uint256 hatId, ClaimType claimType);
 
   /*//////////////////////////////////////////////////////////////
                             DATA MODELS
@@ -105,7 +105,7 @@ contract MultiClaimsHatter is HatsModule {
 
   /**
    * @notice Change the claimability status of a hat. The caller should be an admin of the hat.
-   * @param _hatId The ID of the hat to edit
+   * @param _hatId The ID of the hat to set claimability for
    * @param _claimType New claimability type for the hat
    */
   function setHatClaimability(uint256 _hatId, ClaimType _claimType) public {
@@ -113,12 +113,12 @@ contract MultiClaimsHatter is HatsModule {
 
     hatToClaimType[_hatId] = _claimType;
 
-    emit HatClaimabilityEdited(_hatId, _claimType);
+    emit HatClaimabilitySet(_hatId, _claimType);
   }
 
   /**
    * @notice Change the claimability status of multiple hats. The caller should be an admin of the hats.
-   * @param _hatIds The IDs of the hats to edit
+   * @param _hatIds The ID of the hat to set claimability for
    * @param _claimTypes New claimability types for each hat
    */
   function setHatsClaimability(uint256[] calldata _hatIds, ClaimType[] calldata _claimTypes) public {
@@ -137,7 +137,7 @@ contract MultiClaimsHatter is HatsModule {
       }
     }
 
-    emit HatsClaimabilityEdited(_hatIds, _claimTypes);
+    emit HatsClaimabilitySet(_hatIds, _claimTypes);
   }
 
   /**
@@ -147,12 +147,12 @@ contract MultiClaimsHatter is HatsModule {
    * @param _moduleHatId The hat for which to deploy a HatsModule.
    * @param _otherImmutableArgs Other immutable args to pass to the clone as immutable storage.
    * @param _initData The encoded data to pass to the `setUp` function of the new HatsModule instance. Leave empty if no
-   * @param _hatId The ID of the hat to edit
+   * @param _hatId The ID of the hat to set claimability for
    * @param _claimType New claimability type for the hat
    * @return _instance The address of the deployed HatsModule instance
    */
   function setHatClaimabilityAndCreateModule(
-    address _factory,
+    HatsModuleFactory _factory,
     address _implementation,
     uint256 _moduleHatId,
     bytes calldata _otherImmutableArgs,
@@ -164,10 +164,9 @@ contract MultiClaimsHatter is HatsModule {
 
     hatToClaimType[_hatId] = _claimType;
 
-    _instance =
-      HatsModuleFactory(_factory).createHatsModule(_implementation, _moduleHatId, _otherImmutableArgs, _initData);
+    _instance = _factory.createHatsModule(_implementation, _moduleHatId, _otherImmutableArgs, _initData);
 
-    emit HatClaimabilityEdited(_hatId, _claimType);
+    emit HatClaimabilitySet(_hatId, _claimType);
   }
 
   /**
@@ -178,12 +177,12 @@ contract MultiClaimsHatter is HatsModule {
    * @param _moduleHatIds The hats for which to deploy a HatsModule.
    * @param _otherImmutableArgsArray Other immutable args to pass to the clones as immutable storage.
    * @param _initDataArray The encoded data to pass to the `setUp` functions of the new HatsModule instances. Leave
-   * @param _hatIds The IDs of the hats to edit
+   * @param _hatIds The IDs of the hats to set claimability for
    * @param _claimTypes New claimability types for each hat
    * @return success True if all modules were successfully created and the claimability types were set
    */
   function setHatsClaimabilityAndCreateModules(
-    address _factory,
+    HatsModuleFactory _factory,
     address[] calldata _implementations,
     uint256[] calldata _moduleHatIds,
     bytes[] calldata _otherImmutableArgsArray,
@@ -206,11 +205,9 @@ contract MultiClaimsHatter is HatsModule {
       }
     }
 
-    success = HatsModuleFactory(_factory).batchCreateHatsModule(
-      _implementations, _moduleHatIds, _otherImmutableArgsArray, _initDataArray
-    );
+    success = _factory.batchCreateHatsModule(_implementations, _moduleHatIds, _otherImmutableArgsArray, _initDataArray);
 
-    emit HatsClaimabilityEdited(_hatIds, _claimTypes);
+    emit HatsClaimabilitySet(_hatIds, _claimTypes);
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -297,7 +294,7 @@ contract MultiClaimsHatter is HatsModule {
    * @param _hatId The hat to claim
    */
   function canClaimForAccount(address _account, uint256 _hatId) public view returns (bool) {
-    return (hatIsClaimableFor(_hatId) && _isExplicitlyEligible(_hatId, _account));
+    return (isClaimableFor(_hatId) && _isExplicitlyEligible(_hatId, _account));
   }
 
   /**
@@ -306,22 +303,22 @@ contract MultiClaimsHatter is HatsModule {
    * @param _hatId The hat to claim
    */
   function accountCanClaim(address _account, uint256 _hatId) public view returns (bool) {
-    return (hatIsClaimableBy(_hatId) && _isExplicitlyEligible(_hatId, _account));
+    return (isClaimableBy(_hatId) && _isExplicitlyEligible(_hatId, _account));
   }
 
   /**
    * @notice Checks if a hat is claimable
    * @param _hatId The ID of the hat
    */
-  function hatIsClaimableBy(uint256 _hatId) public view returns (bool) {
-    return (hatExists(_hatId) && wearsAdmin(_hatId) && hatToClaimType[_hatId] != ClaimType.NotClaimable);
+  function isClaimableBy(uint256 _hatId) public view returns (bool) {
+    return (hatExists(_hatId) && wearsAdmin(_hatId) && hatToClaimType[_hatId] > ClaimType.NotClaimable);
   }
 
   /**
    * @notice Checks if a hat is claimable on behalf of accounts
    * @param _hatId The ID of the hat
    */
-  function hatIsClaimableFor(uint256 _hatId) public view returns (bool) {
+  function isClaimableFor(uint256 _hatId) public view returns (bool) {
     return (hatExists(_hatId) && wearsAdmin(_hatId) && hatToClaimType[_hatId] == ClaimType.ClaimableFor);
   }
 
@@ -399,6 +396,6 @@ contract MultiClaimsHatter is HatsModule {
       }
     }
 
-    emit HatsClaimabilityEdited(_hatIds, _claimTypes);
+    emit HatsClaimabilitySet(_hatIds, _claimTypes);
   }
 }

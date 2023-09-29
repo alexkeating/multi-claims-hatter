@@ -104,20 +104,20 @@ contract TestDeployInstance_WithoutInitialHats is DeployInstance_WithoutInitialH
     assertEq(instance.wearsAdmin(HATS.getNextId(hat_x_2)), false);
   }
 
-  function test_hatIsClaimableFor() public {
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_2), false);
-    assertEq(instance.hatIsClaimableFor(HATS.getNextId(hat_x_2)), false);
+  function test_isClaimableFor() public {
+    assertEq(instance.isClaimableFor(hat_x_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_1_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_1_1_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_2), false);
+    assertEq(instance.isClaimableFor(HATS.getNextId(hat_x_2)), false);
   }
 
-  function test_hatIsClaimableBy() public {
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1), false);
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1), false);
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1_1), false);
-    assertEq(instance.hatIsClaimableBy(hat_x_2), false);
-    assertEq(instance.hatIsClaimableBy(HATS.getNextId(hat_x_2)), false);
+  function test_isClaimableBy() public {
+    assertEq(instance.isClaimableBy(hat_x_1_1), false);
+    assertEq(instance.isClaimableBy(hat_x_1_1_1), false);
+    assertEq(instance.isClaimableBy(hat_x_1_1_1_1), false);
+    assertEq(instance.isClaimableBy(hat_x_2), false);
+    assertEq(instance.isClaimableBy(HATS.getNextId(hat_x_2)), false);
   }
 
   function test_accountCanClaim() public {
@@ -207,20 +207,20 @@ contract TestAddClaimableHats_WithoutInitialHats is AddClaimableHats_WithoutInit
     assertEq(instance.wearsAdmin(HATS.getNextId(hat_x_2)), false);
   }
 
-  function test_hatIsClaimableFor() public {
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1), true);
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_2), false);
-    assertEq(instance.hatIsClaimableFor(HATS.getNextId(hat_x_2)), false);
+  function test_isClaimableFor() public {
+    assertEq(instance.isClaimableFor(hat_x_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_1_1_1), true);
+    assertEq(instance.isClaimableFor(hat_x_1_1_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_2), false);
+    assertEq(instance.isClaimableFor(HATS.getNextId(hat_x_2)), false);
   }
 
-  function test_hatIsClaimableBy() public {
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_2), false);
-    assertEq(instance.hatIsClaimableBy(HATS.getNextId(hat_x_2)), false);
+  function test_isClaimableBy() public {
+    assertEq(instance.isClaimableBy(hat_x_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_1_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_1_1_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_2), false);
+    assertEq(instance.isClaimableBy(HATS.getNextId(hat_x_2)), false);
   }
 
   function test_accountCanClaim() public {
@@ -383,20 +383,20 @@ contract TestDeployInstance_WithInitialHats is DeployInstance_WithInitialHats {
     instance.setHatClaimability(hat_x_2, MultiClaimsHatter.ClaimType.Claimable);
   }
 
-  function test_hatIsClaimableFor() public {
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1), true);
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_2), false);
-    assertEq(instance.hatIsClaimableFor(HATS.getNextId(hat_x_2)), false);
+  function test_isClaimableFor() public {
+    assertEq(instance.isClaimableFor(hat_x_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_1_1_1), true);
+    assertEq(instance.isClaimableFor(hat_x_1_1_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_2), false);
+    assertEq(instance.isClaimableFor(HATS.getNextId(hat_x_2)), false);
   }
 
-  function test_hatIsClaimableBy() public {
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_2), false);
-    assertEq(instance.hatIsClaimableBy(HATS.getNextId(hat_x_2)), false);
+  function test_isClaimableBy() public {
+    assertEq(instance.isClaimableBy(hat_x_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_1_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_1_1_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_2), false);
+    assertEq(instance.isClaimableBy(HATS.getNextId(hat_x_2)), false);
   }
 
   function test_accountCanClaim() public {
@@ -484,33 +484,15 @@ contract DeployInstance_BatchModuleCreationAndRegistration is Setup {
     vm.startPrank(dao);
     // Batch one module creation and hat registration
     address module1 = instance.setHatClaimabilityAndCreateModule(
-      0xfE661c01891172046feE16D3a57c3Cf456729efA,
-      alwaysEligibleModule,
-      0,
-      "",
-      "",
-      hat_x_1_1,
-      MultiClaimsHatter.ClaimType.Claimable
+      FACTORY, alwaysEligibleModule, 0, "", "", hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable
     );
 
     address module2 = instance.setHatClaimabilityAndCreateModule(
-      0xfE661c01891172046feE16D3a57c3Cf456729efA,
-      alwaysEligibleModule,
-      1,
-      "",
-      "",
-      hat_x_1_1_1,
-      MultiClaimsHatter.ClaimType.ClaimableFor
+      FACTORY, alwaysEligibleModule, 1, "", "", hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor
     );
 
     address module3 = instance.setHatClaimabilityAndCreateModule(
-      0xfE661c01891172046feE16D3a57c3Cf456729efA,
-      alwaysNotEligibleModule,
-      2,
-      "",
-      "",
-      hat_x_1_1_1_1,
-      MultiClaimsHatter.ClaimType.Claimable
+      FACTORY, alwaysNotEligibleModule, 2, "", "", hat_x_1_1_1_1, MultiClaimsHatter.ClaimType.Claimable
     );
     vm.stopPrank();
 
@@ -540,20 +522,20 @@ contract TestDeployInstance_BatchModuleCreationAndRegistration is DeployInstance
     assertEq(instance.wearsAdmin(HATS.getNextId(hat_x_2)), false);
   }
 
-  function test_hatIsClaimableFor() public {
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1), true);
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_2), false);
-    assertEq(instance.hatIsClaimableFor(HATS.getNextId(hat_x_2)), false);
+  function test_isClaimableFor() public {
+    assertEq(instance.isClaimableFor(hat_x_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_1_1_1), true);
+    assertEq(instance.isClaimableFor(hat_x_1_1_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_2), false);
+    assertEq(instance.isClaimableFor(HATS.getNextId(hat_x_2)), false);
   }
 
-  function test_hatIsClaimableBy() public {
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_2), false);
-    assertEq(instance.hatIsClaimableBy(HATS.getNextId(hat_x_2)), false);
+  function test_isClaimableBy() public {
+    assertEq(instance.isClaimableBy(hat_x_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_1_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_1_1_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_2), false);
+    assertEq(instance.isClaimableBy(HATS.getNextId(hat_x_2)), false);
   }
 
   function test_accountCanClaim() public {
@@ -683,13 +665,7 @@ contract DeployInstance_BatchMultiModuleCreationAndRegistration is Setup {
     vm.recordLogs();
     vm.getRecordedLogs();
     instance.setHatsClaimabilityAndCreateModules(
-      0xfE661c01891172046feE16D3a57c3Cf456729efA,
-      _implementations,
-      _moduleHatIds,
-      _otherImmutableArgsArray,
-      _initDataArray,
-      _hatIds,
-      _claimTypes
+      FACTORY, _implementations, _moduleHatIds, _otherImmutableArgsArray, _initDataArray, _hatIds, _claimTypes
     );
     // get created modules addresses
     Vm.Log[] memory entries = vm.getRecordedLogs();
@@ -724,20 +700,20 @@ contract TestDeployInstance_BatchMultiModuleCreationAndRegistration is
     assertEq(instance.wearsAdmin(HATS.getNextId(hat_x_2)), false);
   }
 
-  function test_hatIsClaimableFor() public {
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1), true);
-    assertEq(instance.hatIsClaimableFor(hat_x_1_1_1_1), false);
-    assertEq(instance.hatIsClaimableFor(hat_x_2), false);
-    assertEq(instance.hatIsClaimableFor(HATS.getNextId(hat_x_2)), false);
+  function test_isClaimableFor() public {
+    assertEq(instance.isClaimableFor(hat_x_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_1_1_1), true);
+    assertEq(instance.isClaimableFor(hat_x_1_1_1_1), false);
+    assertEq(instance.isClaimableFor(hat_x_2), false);
+    assertEq(instance.isClaimableFor(HATS.getNextId(hat_x_2)), false);
   }
 
-  function test_hatIsClaimableBy() public {
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_1_1_1_1), true);
-    assertEq(instance.hatIsClaimableBy(hat_x_2), false);
-    assertEq(instance.hatIsClaimableBy(HATS.getNextId(hat_x_2)), false);
+  function test_isClaimableBy() public {
+    assertEq(instance.isClaimableBy(hat_x_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_1_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_1_1_1_1), true);
+    assertEq(instance.isClaimableBy(hat_x_2), false);
+    assertEq(instance.isClaimableBy(HATS.getNextId(hat_x_2)), false);
   }
 
   function test_accountCanClaim() public {
