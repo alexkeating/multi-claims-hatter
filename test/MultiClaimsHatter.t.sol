@@ -854,3 +854,137 @@ contract TestClaimHat_BatchMultiModuleCreationAndRegistration is ClaimHat_BatchM
     instance.claimHats(inputHats);
   }
 }
+
+/*//////////////////////////////////////////////////////////////
+      Scenario 5 - Multi claiming test 
+  //////////////////////////////////////////////////////////////*/
+
+contract DeployInstance_BatchClaimHatsSetup is Setup {
+  function setUp() public virtual override {
+    super.setUp();
+
+    address alwaysEligibleModule = address(new TestEligibilityAlwaysEligible("test"));
+
+    vm.startPrank(dao);
+    HATS.changeHatEligibility(hat_x_1_1, alwaysEligibleModule);
+    HATS.changeHatEligibility(hat_x_1_1_1, alwaysEligibleModule);
+    HATS.changeHatEligibility(hat_x_1_1_1_1, alwaysEligibleModule);
+    vm.stopPrank();
+
+    uint256[] memory initialHats = new uint256[](3);
+    MultiClaimsHatter.ClaimType[] memory initialClaimTypes = new MultiClaimsHatter.ClaimType[](3);
+    initialHats[0] = hat_x_1_1;
+    initialHats[1] = hat_x_1_1_1;
+    initialHats[2] = hat_x_1_1_1_1;
+    initialClaimTypes[0] = MultiClaimsHatter.ClaimType.Claimable;
+    initialClaimTypes[1] = MultiClaimsHatter.ClaimType.Claimable;
+    initialClaimTypes[2] = MultiClaimsHatter.ClaimType.Claimable;
+    bytes memory initData = abi.encode(initialHats, initialClaimTypes);
+
+    vm.expectEmit();
+    emit HatsClaimabilitySet(initialHats, initialClaimTypes);
+    instance = MultiClaimsHatter(deployInstance(initData));
+    vm.prank(dao);
+    HATS.mintHat(hat_x_1, address(instance));
+  }
+}
+
+contract ClaimHats_BatchClaimHatsSetup is DeployInstance_BatchClaimHatsSetup {
+  function setUp() public virtual override {
+    super.setUp();
+
+    // prepare hats to claims array
+    uint256[] memory hatsToClaim = new uint256[](3);
+    hatsToClaim[0] = hat_x_1_1;
+    hatsToClaim[1] = hat_x_1_1_1;
+    hatsToClaim[2] = hat_x_1_1_1_1;
+
+    // claim all hats
+    vm.startPrank(wearer);
+    vm.expectEmit();
+    emit TransferSingle(address(instance), address(0), wearer, hat_x_1_1, 1);
+    vm.expectEmit();
+    emit TransferSingle(address(instance), address(0), wearer, hat_x_1_1_1, 1);
+    vm.expectEmit();
+    emit TransferSingle(address(instance), address(0), wearer, hat_x_1_1_1_1, 1);
+    instance.claimHats(hatsToClaim);
+    vm.stopPrank();
+  }
+}
+
+contract TestClaimHat_BatchClaimHatsSetup is ClaimHats_BatchClaimHatsSetup {
+  function test_hatsClaimed() public {
+    assertEq(HATS.isWearerOfHat(wearer, hat_x_1_1), true);
+    assertEq(HATS.isWearerOfHat(wearer, hat_x_1_1_1), true);
+    assertEq(HATS.isWearerOfHat(wearer, hat_x_1_1_1_1), true);
+  }
+}
+
+/*//////////////////////////////////////////////////////////////
+      Scenario 6 - Multi claiming for test 
+  //////////////////////////////////////////////////////////////*/
+
+contract DeployInstance_BatchClaimHatsForSetup is Setup {
+  function setUp() public virtual override {
+    super.setUp();
+
+    address alwaysEligibleModule = address(new TestEligibilityAlwaysEligible("test"));
+
+    vm.startPrank(dao);
+    HATS.changeHatEligibility(hat_x_1_1, alwaysEligibleModule);
+    HATS.changeHatEligibility(hat_x_1_1_1, alwaysEligibleModule);
+    HATS.changeHatEligibility(hat_x_1_1_1_1, alwaysEligibleModule);
+    vm.stopPrank();
+
+    uint256[] memory initialHats = new uint256[](3);
+    MultiClaimsHatter.ClaimType[] memory initialClaimTypes = new MultiClaimsHatter.ClaimType[](3);
+    initialHats[0] = hat_x_1_1;
+    initialHats[1] = hat_x_1_1_1;
+    initialHats[2] = hat_x_1_1_1_1;
+    initialClaimTypes[0] = MultiClaimsHatter.ClaimType.ClaimableFor;
+    initialClaimTypes[1] = MultiClaimsHatter.ClaimType.ClaimableFor;
+    initialClaimTypes[2] = MultiClaimsHatter.ClaimType.ClaimableFor;
+    bytes memory initData = abi.encode(initialHats, initialClaimTypes);
+
+    vm.expectEmit();
+    emit HatsClaimabilitySet(initialHats, initialClaimTypes);
+    instance = MultiClaimsHatter(deployInstance(initData));
+    vm.prank(dao);
+    HATS.mintHat(hat_x_1, address(instance));
+  }
+}
+
+contract ClaimHats_BatchClaimHatsForSetup is DeployInstance_BatchClaimHatsForSetup {
+  function setUp() public virtual override {
+    super.setUp();
+
+    // prepare hats and accounts arrays
+    uint256[] memory hatsToClaim = new uint256[](3);
+    hatsToClaim[0] = hat_x_1_1;
+    hatsToClaim[1] = hat_x_1_1_1;
+    hatsToClaim[2] = hat_x_1_1_1_1;
+    address[] memory accountsToClaimFor = new address[](3);
+    accountsToClaimFor[0] = wearer;
+    accountsToClaimFor[1] = wearer;
+    accountsToClaimFor[2] = wearer;
+
+    // claim all hats
+    vm.startPrank(bot);
+    vm.expectEmit();
+    emit TransferSingle(address(instance), address(0), wearer, hat_x_1_1, 1);
+    vm.expectEmit();
+    emit TransferSingle(address(instance), address(0), wearer, hat_x_1_1_1, 1);
+    vm.expectEmit();
+    emit TransferSingle(address(instance), address(0), wearer, hat_x_1_1_1_1, 1);
+    instance.claimHatsFor(hatsToClaim, accountsToClaimFor);
+    vm.stopPrank();
+  }
+}
+
+contract TestClaimHat_BatchClaimHatsForSetup is ClaimHats_BatchClaimHatsForSetup {
+  function test_hatsClaimed() public {
+    assertEq(HATS.isWearerOfHat(wearer, hat_x_1_1), true);
+    assertEq(HATS.isWearerOfHat(wearer, hat_x_1_1_1), true);
+    assertEq(HATS.isWearerOfHat(wearer, hat_x_1_1_1_1), true);
+  }
+}
