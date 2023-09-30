@@ -216,6 +216,7 @@ contract MultiClaimsHatter is HatsModule {
 
   /**
    * @notice Claim a hat.
+   * @dev This contract must be wearing an admin hat of the hat to claim or else it will revert
    * @param _hatId The ID of the hat to claim
    */
   function claimHat(uint256 _hatId) public {
@@ -228,6 +229,7 @@ contract MultiClaimsHatter is HatsModule {
 
   /**
    * @notice Claim multiple hats.
+   * @dev This contract must be wearing an admin hat of the hats to claim or else it will revert
    * @param _hatIds The IDs of the hats to claim
    */
   function claimHats(uint256[] calldata _hatIds) public {
@@ -248,6 +250,7 @@ contract MultiClaimsHatter is HatsModule {
 
   /**
    * @notice Claim a hat on behalf of an account
+   * @dev This contract must be wearing an admin hat of the hat to claim or else it will revert
    * @param _hatId The ID of the hat to claim for
    * @param _account The account for which to claim
    */
@@ -261,6 +264,7 @@ contract MultiClaimsHatter is HatsModule {
 
   /**
    * @notice Claim multiple hats on behalf of accounts
+   * @dev This contract must be wearing an admin hat of the hats to claim or else it will revert
    * @param _hatIds The IDs of the hats to claim for
    * @param _accounts The accounts for which to claim
    */
