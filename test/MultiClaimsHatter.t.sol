@@ -45,6 +45,9 @@ contract Setup is DeployImplementation, Test {
     address implementation, address instance, uint256 hatId, bytes otherImmutableArgs, bytes initData
   );
 
+  // Hats mint event
+  event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 amount);
+
   function deployInstance(bytes memory initData) public returns (MultiClaimsHatter) {
     // deploy the instance
     vm.prank(dao);
@@ -290,10 +293,17 @@ contract ClaimHat_WithoutInitialHats is AddClaimableHats_WithoutInitialHats {
   function setUp() public virtual override {
     super.setUp();
 
-    vm.prank(wearer);
+    vm.startPrank(wearer);
+    vm.expectEmit();
+    emit TransferSingle(address(instance), address(0), wearer, hat_x_1_1, 1);
     instance.claimHat(hat_x_1_1);
-    vm.prank(bot);
+    vm.stopPrank();
+
+    vm.startPrank(bot);
+    vm.expectEmit();
+    emit TransferSingle(address(instance), address(0), wearer, hat_x_1_1_1, 1);
     instance.claimHatFor(hat_x_1_1_1, wearer);
+    vm.stopPrank();
   }
 }
 
