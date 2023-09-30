@@ -2,6 +2,7 @@
 src = 'src'
 out = 'out'
 libs = ['lib']
+optimizer_runs = 1_000_000
 # the following setting ensures that deterministically deployed contracts will always be to the same address
 bytecode_hash = "none"
 gas_reports = ["MultiClaimsHatter"]

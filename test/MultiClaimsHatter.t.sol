@@ -36,6 +36,9 @@ contract Setup is DeployImplementation, Test {
   uint256[] public inputHats;
   address[] public inputWearers;
 
+  event HatsClaimabilitySet(uint256[] hatIds, MultiClaimsHatter.ClaimType[] claimTypes);
+  event HatClaimabilitySet(uint256 hatId, MultiClaimsHatter.ClaimType claimType);
+
   function deployInstance(bytes memory initData) public returns (MultiClaimsHatter) {
     // deploy the instance
     vm.prank(dao);
@@ -183,8 +186,16 @@ contract AddClaimableHats_WithoutInitialHats is DeployInstance_WithoutInitialHat
     super.setUp();
 
     vm.startPrank(dao);
+    vm.expectEmit();
+    emit HatClaimabilitySet(hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable);
     instance.setHatClaimability(hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable);
+
+    vm.expectEmit();
+    emit HatClaimabilitySet(hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor);
     instance.setHatClaimability(hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor);
+
+    vm.expectEmit();
+    emit HatClaimabilitySet(hat_x_1_1_1_1, MultiClaimsHatter.ClaimType.Claimable);
     instance.setHatClaimability(hat_x_1_1_1_1, MultiClaimsHatter.ClaimType.Claimable);
     vm.stopPrank();
   }
@@ -333,6 +344,8 @@ contract DeployInstance_WithInitialHats is Setup {
     initialClaimTypes[2] = MultiClaimsHatter.ClaimType.Claimable;
     bytes memory initData = abi.encode(initialHats, initialClaimTypes);
 
+    vm.expectEmit();
+    emit HatsClaimabilitySet(initialHats, initialClaimTypes);
     instance = MultiClaimsHatter(deployInstance(initData));
     vm.prank(dao);
     HATS.mintHat(hat_x_1, address(instance));
@@ -483,14 +496,20 @@ contract DeployInstance_BatchModuleCreationAndRegistration is Setup {
 
     vm.startPrank(dao);
     // Batch one module creation and hat registration
+    vm.expectEmit();
+    emit HatClaimabilitySet(hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable);
     address module1 = instance.setHatClaimabilityAndCreateModule(
       FACTORY, alwaysEligibleModule, 0, "", "", hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable
     );
 
+    vm.expectEmit();
+    emit HatClaimabilitySet(hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor);
     address module2 = instance.setHatClaimabilityAndCreateModule(
       FACTORY, alwaysEligibleModule, 1, "", "", hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor
     );
 
+    vm.expectEmit();
+    emit HatClaimabilitySet(hat_x_1_1_1_1, MultiClaimsHatter.ClaimType.Claimable);
     address module3 = instance.setHatClaimabilityAndCreateModule(
       FACTORY, alwaysNotEligibleModule, 2, "", "", hat_x_1_1_1_1, MultiClaimsHatter.ClaimType.Claimable
     );
@@ -662,6 +681,8 @@ contract DeployInstance_BatchMultiModuleCreationAndRegistration is Setup {
     _claimTypes[1] = MultiClaimsHatter.ClaimType.ClaimableFor;
     _claimTypes[2] = MultiClaimsHatter.ClaimType.Claimable;
 
+    vm.expectEmit();
+    emit HatsClaimabilitySet(_hatIds, _claimTypes);
     vm.recordLogs();
     vm.getRecordedLogs();
     instance.setHatsClaimabilityAndCreateModules(
