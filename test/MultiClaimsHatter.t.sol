@@ -36,8 +36,14 @@ contract Setup is DeployImplementation, Test {
   uint256[] public inputHats;
   address[] public inputWearers;
 
+  // MultiClaimsHatter events
   event HatsClaimabilitySet(uint256[] hatIds, MultiClaimsHatter.ClaimType[] claimTypes);
   event HatClaimabilitySet(uint256 hatId, MultiClaimsHatter.ClaimType claimType);
+
+  // HatsModuleFactory event
+  event HatsModuleFactory_ModuleDeployed(
+    address implementation, address instance, uint256 hatId, bytes otherImmutableArgs, bytes initData
+  );
 
   function deployInstance(bytes memory initData) public returns (MultiClaimsHatter) {
     // deploy the instance
@@ -495,19 +501,27 @@ contract DeployInstance_BatchModuleCreationAndRegistration is Setup {
     address alwaysNotEligibleModule = address(new TestEligibilityAlwaysNotEligible("test"));
 
     vm.startPrank(dao);
-    // Batch one module creation and hat registration
+    address predictedNewInatance1 = FACTORY.getHatsModuleAddress(alwaysEligibleModule, 0, "");
+    vm.expectEmit();
+    emit HatsModuleFactory_ModuleDeployed(alwaysEligibleModule, predictedNewInatance1, 0, "", "");
     vm.expectEmit();
     emit HatClaimabilitySet(hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable);
     address module1 = instance.setHatClaimabilityAndCreateModule(
       FACTORY, alwaysEligibleModule, 0, "", "", hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable
     );
 
+    address predictedNewInatance2 = FACTORY.getHatsModuleAddress(alwaysEligibleModule, 1, "");
+    vm.expectEmit();
+    emit HatsModuleFactory_ModuleDeployed(alwaysEligibleModule, predictedNewInatance2, 1, "", "");
     vm.expectEmit();
     emit HatClaimabilitySet(hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor);
     address module2 = instance.setHatClaimabilityAndCreateModule(
       FACTORY, alwaysEligibleModule, 1, "", "", hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor
     );
 
+    address predictedNewInatance3 = FACTORY.getHatsModuleAddress(alwaysNotEligibleModule, 2, "");
+    vm.expectEmit();
+    emit HatsModuleFactory_ModuleDeployed(alwaysNotEligibleModule, predictedNewInatance3, 2, "", "");
     vm.expectEmit();
     emit HatClaimabilitySet(hat_x_1_1_1_1, MultiClaimsHatter.ClaimType.Claimable);
     address module3 = instance.setHatClaimabilityAndCreateModule(
@@ -681,6 +695,18 @@ contract DeployInstance_BatchMultiModuleCreationAndRegistration is Setup {
     _claimTypes[1] = MultiClaimsHatter.ClaimType.ClaimableFor;
     _claimTypes[2] = MultiClaimsHatter.ClaimType.Claimable;
 
+    // expected module factory events
+    address predictedNewInatance1 = FACTORY.getHatsModuleAddress(alwaysEligibleModule, 0, "");
+    vm.expectEmit();
+    emit HatsModuleFactory_ModuleDeployed(alwaysEligibleModule, predictedNewInatance1, 0, "", "");
+    address predictedNewInatance2 = FACTORY.getHatsModuleAddress(alwaysEligibleModule, 1, "");
+    vm.expectEmit();
+    emit HatsModuleFactory_ModuleDeployed(alwaysEligibleModule, predictedNewInatance2, 1, "", "");
+    address predictedNewInatance3 = FACTORY.getHatsModuleAddress(alwaysNotEligibleModule, 2, "");
+    vm.expectEmit();
+    emit HatsModuleFactory_ModuleDeployed(alwaysNotEligibleModule, predictedNewInatance3, 2, "", "");
+
+    // expected claims hatter event
     vm.expectEmit();
     emit HatsClaimabilitySet(_hatIds, _claimTypes);
     vm.recordLogs();
