@@ -15,8 +15,8 @@ import { TestEligibilityAlwaysEligible, TestEligibilityAlwaysNotEligible } from 
 
 contract Setup is DeployImplementation, Test {
   uint256 public fork;
-  // the block number where hats module factory was deployed on Goerli
-  uint256 public constant BLOCK_NUMBER = 9_713_194;
+  // the block number where hats module factory was deployed on Sepolia
+  uint256 public constant BLOCK_NUMBER = 5_516_083;
   IHats public constant HATS = IHats(0x3bc1A0Ad72417f2d411118085256fC53CBdDd137); // v1.hatsprotocol.eth
   HatsModuleFactory public constant FACTORY = HatsModuleFactory(0xfE661c01891172046feE16D3a57c3Cf456729efA);
 
