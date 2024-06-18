@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 // import { console2 } from "forge-std/Test.sol"; // remove before deploy
 import { HatsModule } from "hats-module/HatsModule.sol";
-import { HatsModuleFactory } from "hats-module/HatsModuleFactory.sol";
+// import { HatsModuleFactory } from "hats-module/HatsModuleFactory.sol";
 
 /*//////////////////////////////////////////////////////////////
                             CUSTOM ERRORS
@@ -84,7 +84,7 @@ contract MultiClaimsHatter is HatsModule {
 
   /// @notice Deploy the implementation contract and set its version
   /// @dev This is only used to deploy the implementation contract, and should not be used to deploy clones
-  constructor(string memory _version) HatsModule(_version) { }
+  constructor(string memory _version, address _hats, uint256 _hatId) HatsModule(_version, _hats, _hatId) { }
 
   /*//////////////////////////////////////////////////////////////
                             INITIALIZOR
@@ -153,24 +153,24 @@ contract MultiClaimsHatter is HatsModule {
    * @param _claimType New claimability type for the hat
    * @return _instance The address of the deployed HatsModule instance
    */
-  function setHatClaimabilityAndCreateModule(
-    HatsModuleFactory _factory,
-    address _implementation,
-    uint256 _moduleHatId,
-    bytes calldata _otherImmutableArgs,
-    bytes calldata _initData,
-    uint256 _saltNonce,
-    uint256 _hatId,
-    ClaimType _claimType
-  ) public returns (address _instance) {
-    if (!HATS().isAdminOfHat(msg.sender, _hatId)) revert MultiClaimsHatter_NotAdminOfHat(msg.sender, _hatId);
+  // function setHatClaimabilityAndCreateModule(
+  //   HatsModuleFactory _factory,
+  //   address _implementation,
+  //   uint256 _moduleHatId,
+  //   bytes calldata _otherImmutableArgs,
+  //   bytes calldata _initData,
+  //   uint256 _saltNonce,
+  //   uint256 _hatId,
+  //   ClaimType _claimType
+  // ) public returns (address _instance) {
+  //   if (!HATS().isAdminOfHat(msg.sender, _hatId)) revert MultiClaimsHatter_NotAdminOfHat(msg.sender, _hatId);
 
-    hatToClaimType[_hatId] = _claimType;
+  //   hatToClaimType[_hatId] = _claimType;
 
-    _instance = _factory.createHatsModule(_implementation, _moduleHatId, _otherImmutableArgs, _initData, _saltNonce);
+  //   _instance = _factory.createHatsModule(_implementation, _moduleHatId, _otherImmutableArgs, _initData, _saltNonce);
 
-    emit HatClaimabilitySet(_hatId, _claimType);
-  }
+  //   emit HatClaimabilitySet(_hatId, _claimType);
+  // }
 
   /**
    * @notice Wrapper around a HatsModuleFactory. Deploys new HatsModule instances and sets the claimability type of
@@ -185,37 +185,37 @@ contract MultiClaimsHatter is HatsModule {
    * @param _claimTypes New claimability types for each hat
    * @return success True if all modules were successfully created and the claimability types were set
    */
-  function setHatsClaimabilityAndCreateModules(
-    HatsModuleFactory _factory,
-    address[] calldata _implementations,
-    uint256[] calldata _moduleHatIds,
-    bytes[] calldata _otherImmutableArgsArray,
-    bytes[] calldata _initDataArray,
-    uint256[] memory _saltNonces,
-    uint256[] memory _hatIds,
-    ClaimType[] memory _claimTypes
-  ) public returns (bool success) {
-    uint256 length = _hatIds.length;
-    if (_claimTypes.length != length) {
-      revert MultiClaimsHatter_ArrayLengthMismatch();
-    }
+  // function setHatsClaimabilityAndCreateModules(
+  //   HatsModuleFactory _factory,
+  //   address[] calldata _implementations,
+  //   uint256[] calldata _moduleHatIds,
+  //   bytes[] calldata _otherImmutableArgsArray,
+  //   bytes[] calldata _initDataArray,
+  //   uint256[] memory _saltNonces,
+  //   uint256[] memory _hatIds,
+  //   ClaimType[] memory _claimTypes
+  // ) public returns (bool success) {
+  //   uint256 length = _hatIds.length;
+  //   if (_claimTypes.length != length) {
+  //     revert MultiClaimsHatter_ArrayLengthMismatch();
+  //   }
 
-    uint256 hatId;
-    for (uint256 i; i < length;) {
-      hatId = _hatIds[i];
-      if (!HATS().isAdminOfHat(msg.sender, hatId)) revert MultiClaimsHatter_NotAdminOfHat(msg.sender, hatId);
-      hatToClaimType[hatId] = _claimTypes[i];
-      unchecked {
-        ++i;
-      }
-    }
+  //   uint256 hatId;
+  //   for (uint256 i; i < length;) {
+  //     hatId = _hatIds[i];
+  //     if (!HATS().isAdminOfHat(msg.sender, hatId)) revert MultiClaimsHatter_NotAdminOfHat(msg.sender, hatId);
+  //     hatToClaimType[hatId] = _claimTypes[i];
+  //     unchecked {
+  //       ++i;
+  //     }
+  //   }
 
-    success = _factory.batchCreateHatsModule(
-      _implementations, _moduleHatIds, _otherImmutableArgsArray, _initDataArray, _saltNonces
-    );
+  //   success = _factory.batchCreateHatsModule(
+  //     _implementations, _moduleHatIds, _otherImmutableArgsArray, _initDataArray, _saltNonces
+  //   );
 
-    emit HatsClaimabilitySet(_hatIds, _claimTypes);
-  }
+  //   emit HatsClaimabilitySet(_hatIds, _claimTypes);
+  // }
 
   /*//////////////////////////////////////////////////////////////
                         CLAIMING FUNCTIONS
