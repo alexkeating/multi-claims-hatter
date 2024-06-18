@@ -9,7 +9,8 @@ import {
   MultiClaimsHatter_NotAdminOfHat,
   MultiClaimsHatter_NotExplicitlyEligible
 } from "../src/MultiClaimsHatter.sol";
-import { IHats, HatsModuleFactory, deployModuleInstance } from "hats-module/utils/DeployFunctions.sol";
+// import { IHats, HatsModuleFactory, deployModuleInstance } from "hats-module/utils/DeployFunctions.sol";
+import {IHats} from "hats-module/interfaces/IHatsModule.sol";
 import { DeployImplementation } from "../script/MultiClaimsHatter.s.sol";
 import { TestEligibilityAlwaysEligible, TestEligibilityAlwaysNotEligible } from "./utils/TestModules.sol";
 
@@ -18,7 +19,7 @@ contract Setup is DeployImplementation, Test {
   // the block number where hats module factory was deployed on Sepolia
   uint256 public constant BLOCK_NUMBER = 5_516_083;
   IHats public constant HATS = IHats(0x3bc1A0Ad72417f2d411118085256fC53CBdDd137); // v1.hatsprotocol.eth
-  HatsModuleFactory public constant FACTORY = HatsModuleFactory(0x0a3f85fa597B6a967271286aA0724811acDF5CD9);
+  // HatsModuleFactory public constant FACTORY = HatsModuleFactory(0x0a3f85fa597B6a967271286aA0724811acDF5CD9);
 
   MultiClaimsHatter public instance;
   uint256 public tophat_x;
