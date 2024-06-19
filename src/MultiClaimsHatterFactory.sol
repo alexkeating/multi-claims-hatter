@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import { MultiClaimsHatter } from "src/MultiClaimsHatter.sol";
+import { MultiClaimsHatter } from "./MultiClaimsHatter.sol";
 
 contract MultiClaimsHatterFactory {
   // should the version be higher here
