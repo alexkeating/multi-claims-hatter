@@ -11,7 +11,10 @@ contract MultiClaimsHatterFactory {
     address implementation, address instance, uint256 hatId, bytes otherImmutableArgs, bytes initData, uint256 saltNonce
   );
 
-  function deployMultiClaimsHatter(uint256 _hatId, address _hat, bytes calldata _initData, uint256 _saltNonce) external returns (address) {
+  function deployMultiClaimsHatter(uint256 _hatId, address _hat, bytes calldata _initData, uint256 _saltNonce)
+    external
+    returns (address)
+  {
     bytes memory args = abi.encodePacked(_hatId, _hat, _initData);
     bytes32 salt = _calculateSalt(args, _saltNonce);
     // If exists throw error
@@ -22,7 +25,7 @@ contract MultiClaimsHatterFactory {
     emit HatsModuleFactory_ModuleDeployed(
       address(instance), address(instance), _hatId, abi.encodePacked(_hat, _initData), _initData, _saltNonce
     );
-	return address(instance);
+    return address(instance);
   }
 
   function _calculateSalt(bytes memory _args, uint256 _saltNonce) internal view returns (bytes32) {
