@@ -9,7 +9,6 @@ import {
   MultiClaimsHatter_NotAdminOfHat,
   MultiClaimsHatter_NotExplicitlyEligible
 } from "../src/MultiClaimsHatter.sol";
-// import { IHats, HatsModuleFactory, deployModuleInstance } from "hats-module/utils/DeployFunctions.sol";
 import {IHats} from "hats-module/interfaces/IHatsModule.sol";
 import {Hats} from "hats-protocol/Hats.sol";
 import { DeployImplementation } from "../script/MultiClaimsHatter.s.sol";
@@ -24,7 +23,6 @@ contract Setup is DeployImplementation, Test {
   string internal constant x = "Hats Protocol v1";
   string internal constant y = "";
   IHats public HATS = new Hats{salt: bytes32(abi.encode(0x4a75))}(x, y); // v1.hatsprotocol.eth
-  // HatsModuleFactory public constant FACTORY = HatsModuleFactory(0x0a3f85fa597B6a967271286aA0724811acDF5CD9);
 
   MultiClaimsHatter public instance;
   uint256 public tophat_x;
@@ -366,8 +364,8 @@ contract DeployInstance_WithInitialHats is Setup {
     initialClaimTypes[2] = MultiClaimsHatter.ClaimType.Claimable;
     bytes memory initData = abi.encode(initialHats, initialClaimTypes);
 
-    // vm.expectEmit();
-    // emit HatsClaimabilitySet(initialHats, initialClaimTypes);
+    vm.expectEmit();
+    emit HatsClaimabilitySet(initialHats, initialClaimTypes);
     instance = MultiClaimsHatter(deployInstance(initData));
     vm.prank(dao);
     HATS.mintHat(hat_x_1, address(instance));
@@ -526,32 +524,6 @@ contract DeployInstance_BatchModuleCreationAndRegistration is Setup {
     address alwaysNotEligibleModule = address(new TestEligibilityAlwaysNotEligible("test", address(0), 0));
 
     vm.startPrank(dao);
-    // address predictedNewInatance1 = FACTORY.getHatsModuleAddress(alwaysEligibleModule, 0, "", saltNonce);
-    // vm.expectEmit();
-    // emit HatsModuleFactory_ModuleDeployed(alwaysEligibleModule, predictedNewInatance1, 0, "", "", saltNonce);
-    // vm.expectEmit();
-    // emit HatClaimabilitySet(hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable);
-    // address module1 = instance.setHatClaimabilityAndCreateModule(
-    //   FACTORY, alwaysEligibleModule, 0, "", "", saltNonce, hat_x_1_1, MultiClaimsHatter.ClaimType.Claimable
-    // );
-
-    // address predictedNewInatance2 = FACTORY.getHatsModuleAddress(alwaysEligibleModule, 1, "", saltNonce);
-    // vm.expectEmit();
-    // emit HatsModuleFactory_ModuleDeployed(alwaysEligibleModule, predictedNewInatance2, 1, "", "", saltNonce);
-    // vm.expectEmit();
-    // emit HatClaimabilitySet(hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor);
-    // address module2 = instance.setHatClaimabilityAndCreateModule(
-    //   FACTORY, alwaysEligibleModule, 1, "", "", saltNonce, hat_x_1_1_1, MultiClaimsHatter.ClaimType.ClaimableFor
-    // );
-
-    // address predictedNewInatance3 = FACTORY.getHatsModuleAddress(alwaysNotEligibleModule, 2, "", saltNonce);
-    // vm.expectEmit();
-    // emit HatsModuleFactory_ModuleDeployed(alwaysNotEligibleModule, predictedNewInatance3, 2, "", "", saltNonce);
-    // vm.expectEmit();
-    // emit HatClaimabilitySet(hat_x_1_1_1_1, MultiClaimsHatter.ClaimType.Claimable);
-    // address module3 = instance.setHatClaimabilityAndCreateModule(
-    //   FACTORY, alwaysNotEligibleModule, 2, "", "", saltNonce, hat_x_1_1_1_1, MultiClaimsHatter.ClaimType.Claimable
-    // );
 	uint256[] memory myArray = new uint256[](4);
 	myArray[0] = hat_x_1_1;
     myArray[1] =  hat_x_1_1_1;
@@ -709,62 +681,6 @@ contract DeployInstance_BatchMultiModuleCreationAndRegistration is Setup {
 
     // Batch multi modules creation and hats registration
     vm.startPrank(dao);
-    // address[] memory _implementations = new address[](3);
-    // _implementations[0] = alwaysEligibleModule;
-    // _implementations[1] = alwaysEligibleModule;
-    // _implementations[2] = alwaysNotEligibleModule;
-    // uint256[] memory _moduleHatIds = new uint256[](3);
-    // _moduleHatIds[0] = 0;
-    // _moduleHatIds[1] = 1;
-    // _moduleHatIds[2] = 2;
-    // bytes[] memory _otherImmutableArgsArray = new bytes[](3);
-    // _otherImmutableArgsArray[0] = "";
-    // _otherImmutableArgsArray[1] = "";
-    // _otherImmutableArgsArray[2] = "";
-    // bytes[] memory _initDataArray = new bytes[](3);
-    // _initDataArray[0] = "";
-    // _initDataArray[1] = "";
-    // _initDataArray[2] = "";
-    // uint256[] memory _hatIds = new uint256[](3);
-    // _hatIds[0] = hat_x_1_1;
-    // _hatIds[1] = hat_x_1_1_1;
-    // _hatIds[2] = hat_x_1_1_1_1;
-    // MultiClaimsHatter.ClaimType[] memory _claimTypes = new MultiClaimsHatter.ClaimType[](3);
-    // _claimTypes[0] = MultiClaimsHatter.ClaimType.Claimable;
-    // _claimTypes[1] = MultiClaimsHatter.ClaimType.ClaimableFor;
-    // _claimTypes[2] = MultiClaimsHatter.ClaimType.Claimable;
-
-    // // expected module factory events
-    // address predictedNewInatance1 = FACTORY.getHatsModuleAddress(alwaysEligibleModule, 0, "", saltNonces[0]);
-    // vm.expectEmit();
-    // emit HatsModuleFactory_ModuleDeployed(alwaysEligibleModule, predictedNewInatance1, 0, "", "", saltNonces[0]);
-    // address predictedNewInatance2 = FACTORY.getHatsModuleAddress(alwaysEligibleModule, 1, "", saltNonces[1]);
-    // vm.expectEmit();
-    // emit HatsModuleFactory_ModuleDeployed(alwaysEligibleModule, predictedNewInatance2, 1, "", "", saltNonces[1]);
-    // address predictedNewInatance3 = FACTORY.getHatsModuleAddress(alwaysNotEligibleModule, 2, "", saltNonces[2]);
-    // vm.expectEmit();
-    // emit HatsModuleFactory_ModuleDeployed(alwaysNotEligibleModule, predictedNewInatance3, 2, "", "", saltNonces[2]);
-
-    // // expected claims hatter event
-    // vm.expectEmit();
-    // emit HatsClaimabilitySet(_hatIds, _claimTypes);
-    // vm.recordLogs();
-    // vm.getRecordedLogs();
-    // instance.setHatsClaimabilityAndCreateModules(
-    //   FACTORY,
-    //   _implementations,
-    //   _moduleHatIds,
-    //   _otherImmutableArgsArray,
-    //   _initDataArray,
-    //   saltNonces,
-    //   _hatIds,
-    //   _claimTypes
-    // );
-    // // get created modules addresses
-    // Vm.Log[] memory entries = vm.getRecordedLogs();
-    // (, address module1,,,,) = abi.decode(entries[1].data, (address, address, uint256, bytes, bytes, uint256));
-    // (, address module2,,,,) = abi.decode(entries[3].data, (address, address, uint256, bytes, bytes, uint256));
-    // (, address module3,,,,) = abi.decode(entries[5].data, (address, address, uint256, bytes, bytes, uint256));
 	uint256[] memory myArray = new uint256[](4);
 	myArray[0] = hat_x_1_1;
     myArray[1] =  hat_x_1_1_1;

@@ -5,9 +5,9 @@ import { MultiClaimsHatter } from "./MultiClaimsHatter.sol";
 
 contract MultiClaimsHatterFactory {
   // should the version be higher here
-  string public constant VERSION = "0.6.0";
+  string public constant VERSION = "0.6.0-zksync";
 
-  event HatsModuleFactory_ModuleDeployed(
+  event ModuleDeployed(
     address implementation, address instance, uint256 hatId, bytes otherImmutableArgs, bytes initData, uint256 saltNonce
   );
 
@@ -17,12 +17,10 @@ contract MultiClaimsHatterFactory {
   {
     bytes memory args = abi.encodePacked(_hatId, _hat, _initData);
     bytes32 salt = _calculateSalt(args, _saltNonce);
-    // If exists throw error
-    // emit event
-    // TODO: Add method to send create2 address
+    // TODO: Test situate where contract exitsts
     MultiClaimsHatter instance = new MultiClaimsHatter{ salt: salt }(VERSION, _hat, _hatId);
     instance.setUp(_initData);
-    emit HatsModuleFactory_ModuleDeployed(
+    emit ModuleDeployed(
       address(instance), address(instance), _hatId, abi.encodePacked(_hat, _initData), _initData, _saltNonce
     );
     return address(instance);
