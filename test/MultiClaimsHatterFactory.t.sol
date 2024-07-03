@@ -17,4 +17,11 @@ contract TestMultiClaimsHatterFactory is Test {
     address expectedAddress = factory.getAddress(_hatId, _hat, "", _saltNonce);
     assertEq(instance, expectedAddress);
   }
+
+  function testFuzz_deployMultiClaimsHatterTwice(uint256 _hatId, address _hat, uint256 _saltNonce) public {
+    factory.deployMultiClaimsHatter(_hatId, _hat, "", _saltNonce);
+    vm.expectRevert(bytes("Code hash is non-zero"));
+    factory.deployMultiClaimsHatter(_hatId, _hat, "", _saltNonce);
+  }
+
 }
