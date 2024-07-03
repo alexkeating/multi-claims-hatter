@@ -16,19 +16,14 @@ contract MultiClaimsHatterFactory {
     external
     returns (address)
   {
-    console2.log("in deployMultiClaimsHatter");
-    console2.log("hatId", _hatId);
-    console2.log("hat", _hat);
-    console2.log("saltNonce", _saltNonce);
-    bytes memory args = abi.encodePacked(_hatId, _hat, _initData);
-    bytes32 salt = _calculateSalt(args, _saltNonce);
+    bytes memory saltArgs = abi.encodePacked(VERSION, _hatId, _hat, _initData);
+    bytes32 salt = _calculateSalt(saltArgs, _saltNonce);
     // TODO: Test situate where contract exitsts
     MultiClaimsHatter instance = new MultiClaimsHatter{ salt: salt }(VERSION, _hat, _hatId);
     instance.setUp(_initData);
     emit ModuleDeployed(
       address(instance), address(instance), _hatId, abi.encodePacked(_hat, _initData), _initData, _saltNonce
     );
-    console2.log("instance", address(instance));
     return address(instance);
   }
 
@@ -36,21 +31,32 @@ contract MultiClaimsHatterFactory {
     return keccak256(abi.encodePacked(_args, block.chainid, _saltNonce));
   }
 
-  function _getAddress(uint256 _hatId, address _hat, bytes calldata _initData, uint256 _saltNonce)
+  function getAddress(uint256 _hatId, address _hat, bytes calldata _initData, uint256 _saltNonce)
     external
     returns (address addr)
   {
-    console2.log("in _getAddress");
-    console2.log("hatId", _hatId);
-    console2.log("hat", _hat);
-    console2.log("saltNonce", _saltNonce);
-    bytes memory args = abi.encodePacked(_hatId, _hat, _initData);
-    bytes32 salt = _calculateSalt(args, _saltNonce);
+    bytes memory saltArgs = abi.encodePacked(VERSION, _hatId, _hat, _initData);
+    bytes32 salt = _calculateSalt(saltArgs, _saltNonce);
     bytes memory bytecode = type(MultiClaimsHatter).creationCode;
-    console2.log("bytecode length", bytecode.length);
-    assembly {
-      addr := create2(0, add(bytecode, 32), mload(bytecode), salt)
-    }
-    console2.log("addr", addr);
+	addr = computeCreate2Address(salt, address(this), bytecode, abi.encode(VERSION, _hat, _hatId));
+  }
+
+    function computeCreate2Address(
+    bytes32 salt,
+    address deployer,
+    bytes memory initcode,
+    bytes memory constructorArgs
+  ) internal pure returns (address) {
+    return address(
+      uint160(
+        uint256(
+          keccak256(
+            abi.encodePacked(
+              bytes1(0xff), deployer, salt, keccak256(abi.encodePacked(initcode, constructorArgs))
+            )
+          )
+        )
+      )
+    );
   }
 }

@@ -14,9 +14,7 @@ contract TestMultiClaimsHatterFactory is Test {
 
   function testFuzz_deployMultiClaimsHatter(uint256 _hatId, address _hat, uint256 _saltNonce) public {
     address instance = factory.deployMultiClaimsHatter(_hatId, _hat, "", _saltNonce);
-    address expectedAddress = factory._getAddress(_hatId, _hat, "", _saltNonce);
-    console2.log("instance", instance);
-    console2.log("expectedAddress", expectedAddress);
+    address expectedAddress = factory.getAddress(_hatId, _hat, "", _saltNonce);
     assertEq(instance, expectedAddress);
   }
 }
