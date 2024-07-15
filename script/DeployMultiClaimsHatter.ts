@@ -30,7 +30,7 @@ async function main() {
   const deployer = new Deployer(hre, zkWallet);
   const multiHatsHatterFactory = await new Contract(FACTORY_ADDRESS, MultiClaimsHatterFactory.abi, deployer.zkWallet);
 
-  const tx = await multiHatsHatterFactory.deployMultiClaimsHatter(HATS_ID, HATS, "0x0000000000000000000000000000", SALT_NONCE);
+  const tx = await multiHatsHatterFactory.deployMultiClaimsHatter(HATS_ID, HATS, "0x", SALT_NONCE);
   const tr = await tx.wait();
 	console.log(tr)
 }
