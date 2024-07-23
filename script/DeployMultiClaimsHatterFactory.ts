@@ -22,12 +22,26 @@ async function main() {
 
   const contract = await deployer.loadArtifact(contractName);
   const constructorArgs = [];
-  const multiClaimsHatterFactory = await deployer.deploy(contract, constructorArgs, "create2", {"customData": {"salt": "0x0000000000000000000000000000000000000000000000000000000000004a75"}});
-  console.log("constructor args:" + multiClaimsHatterFactory.interface.encodeDeploy(constructorArgs));
-	console.log(`${contractName} was deployed to ${await multiClaimsHatterFactory.getAddress()}`);
+  const multiClaimsHatterFactory = await deployer.deploy(
+    contract,
+    constructorArgs,
+    "create2",
+    {
+      customData: {
+        salt: "0x0000000000000000000000000000000000000000000000000000000000004a75",
+      },
+    }
+  );
+  console.log(
+    "constructor args:" +
+      multiClaimsHatterFactory.interface.encodeDeploy(constructorArgs)
+  );
+  console.log(
+    `${contractName} was deployed to ${await multiClaimsHatterFactory.getAddress()}`
+  );
 }
 
 main().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
-  });
+  console.error(error);
+  process.exitCode = 1;
+});

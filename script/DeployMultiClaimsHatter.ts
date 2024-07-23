@@ -12,9 +12,7 @@ const contractName = "MultiClaimsHatter";
 const HATS_ID = 1;
 const HATS = "0x32Ccb7600c10B4F7e678C7cbde199d98453D0e7e";
 const SALT_NONCE = 1;
-const FACTORY_ADDRESS = "0x1e8C2a171e5c5D92d15F5363fd136CAf3bBf86E2"
-// What does this need to be?
-// const INIT_DATA = "0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000030000000100010001000000000000000000000000000000000000000000000000000000010001000100010000000000000000000000000000000000000000000000000001000100010001000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001"
+const FACTORY_ADDRESS = "0x1e8C2a171e5c5D92d15F5363fd136CAf3bBf86E2";
 
 async function main() {
   dotEnvConfig();
@@ -28,14 +26,23 @@ async function main() {
 
   const zkWallet = new Wallet(deployerPrivateKey);
   const deployer = new Deployer(hre, zkWallet);
-  const multiHatsHatterFactory = await new Contract(FACTORY_ADDRESS, MultiClaimsHatterFactory.abi, deployer.zkWallet);
+  const multiHatsHatterFactory = await new Contract(
+    FACTORY_ADDRESS,
+    MultiClaimsHatterFactory.abi,
+    deployer.zkWallet
+  );
 
-  const tx = await multiHatsHatterFactory.deployMultiClaimsHatter(HATS_ID, HATS, "0x", SALT_NONCE);
+  const tx = await multiHatsHatterFactory.deployModule(
+    HATS_ID,
+    HATS,
+    "0x",
+    SALT_NONCE
+  );
   const tr = await tx.wait();
-	console.log(tr)
+  console.log("Multi claims hatter deployed at " + tr.contractAddress);
 }
 
 main().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
-  });
+  console.error(error);
+  process.exitCode = 1;
+});
