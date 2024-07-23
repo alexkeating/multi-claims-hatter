@@ -3,7 +3,6 @@ pragma solidity ^0.8.19;
 
 import { IHatsModuleFactory } from "hats-module/interfaces/IHatsModuleFactory.sol";
 import { MultiClaimsHatter } from "./MultiClaimsHatter.sol";
-import { console2 } from "forge-std/Test.sol";
 import { L2ContractHelper } from "./lib/L2ContractHelper.sol";
 
 contract MultiClaimsHatterFactory is IHatsModuleFactory {
@@ -11,18 +10,10 @@ contract MultiClaimsHatterFactory is IHatsModuleFactory {
   /// @dev Bytecode hash can be found in zksolc/MultiClaimsHatter.sol/MultiClaimsHatter.json under the hash key.
   bytes32 constant BYTECODE_HASH = 0x0100041dbb312c575f637f3b4ffbdf9beada863fa830a3f771b06df5a8a5c287;
 
-  event ModuleDeployed(
-    address implementation, address instance, uint256 hatId, bytes otherImmutableArgs, bytes initData, uint256 saltNonce
-  );
-
   function deployModule(uint256 _hatId, address _hat, bytes calldata _initData, uint256 _saltNonce)
     external
     returns (address)
   {
-    console2.logBytes(_initData);
-    console2.logUint(_hatId);
-    console2.logUint(_saltNonce);
-    console2.logAddress(_hat);
     bytes memory saltArgs = abi.encodePacked(VERSION, _hatId, _hat, _initData);
     bytes32 salt = _calculateSalt(saltArgs, _saltNonce);
     // TODO: Test situate where contract exitsts
