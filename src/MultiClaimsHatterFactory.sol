@@ -16,7 +16,7 @@ contract MultiClaimsHatterFactory is IHatsModuleFactory {
   {
     bytes memory saltArgs = abi.encodePacked(VERSION, _hatId, _hat, _initData);
     bytes32 salt = _calculateSalt(saltArgs, _saltNonce);
-    // TODO: Test situate where contract exitsts
+
     MultiClaimsHatter instance = new MultiClaimsHatter{ salt: salt }(VERSION, _hat, _hatId);
     instance.setUp(_initData);
     emit ModuleDeployed(
