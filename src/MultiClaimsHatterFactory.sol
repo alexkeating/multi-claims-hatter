@@ -7,8 +7,8 @@ import { L2ContractHelper } from "./lib/L2ContractHelper.sol";
 
 contract MultiClaimsHatterFactory is IHatsModuleFactory {
   string public constant VERSION = "0.6.0-zksync";
-  /// @dev Bytecode hash can be found in zksolc/MultiClaimsHatter.sol/MultiClaimsHatter.json under the hash key.
-  bytes32 constant BYTECODE_HASH = 0x0100041dbb312c575f637f3b4ffbdf9beada863fa830a3f771b06df5a8a5c287;
+  /// @dev Bytecode hash can be found in artifacts-zk/src/MultiClaimsHatterFactory.sol/MultiClaimsHatterFactory.json.
+  bytes32 constant BYTECODE_HASH = 0x010004410d2d3de6a7fcbe21aa0d8e9721fef6c9a39af7d1c3a3600fd3ebe6df;
 
   function deployModule(uint256 _hatId, address _hat, bytes calldata _initData, uint256 _saltNonce)
     external

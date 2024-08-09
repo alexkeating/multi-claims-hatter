@@ -12,7 +12,7 @@ const contractName = "MultiClaimsHatter";
 const HATS_ID = 1;
 const HATS = "0x32Ccb7600c10B4F7e678C7cbde199d98453D0e7e";
 const SALT_NONCE = 1;
-const FACTORY_ADDRESS = "0x6175C315720E9Ca084414AA6A2d0abC9C74E60c0";
+const FACTORY_ADDRESS = "0x3f049Dee8D91D56708066F5b9480A873a4F75ae2";
 
 async function main() {
   dotEnvConfig();
